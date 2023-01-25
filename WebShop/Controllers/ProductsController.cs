@@ -7,16 +7,24 @@ namespace WebShop.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductsController : ControllerBase
     {
-        private readonly IProductService _productService;
+        private readonly IProductsService _productService;
 
-        public ProductController(IProductService productService)
+        public ProductsController(IProductsService productService)
         {
             _productService = productService;
         }
 
-        [HttpPost("product")]
+        [HttpGet("products")]
+        public List<Proizvod> GetAllProducts()
+        {
+            List<Proizvod> proizvodi = _productService.GetAllProducts();
+
+            return proizvodi;
+        }
+
+        [HttpPost("products")]
         public IActionResult Insert([FromBody] ProizvodModel productModel)
         {
             var p = new Proizvod

@@ -4,18 +4,23 @@ using Core.Domain;
 
 namespace Services
 {
-    public class ProductService : IProductService
+    public class ProductsService : IProductsService
     {
         private readonly IProductRepository _repository;
 
-        public ProductService(IProductRepository productRepository)
+        public ProductsService(IProductRepository productRepository)
         {
             _repository = productRepository;
         }
 
+        public List<Proizvod> GetAllProducts()
+        {
+            return _repository.GetAllProducts();
+        }
+
         public void InsertProduct(Proizvod product)
         {
-            if(product == null)
+            if (product == null)
                 throw new ArgumentNullException(nameof(product));
 
             _repository.Insert(product);

@@ -2,8 +2,9 @@
 
 namespace Core.Abstractions.Services
 {
-    public interface IProductService
+    public interface IProductsService
     {
+        List<Proizvod> GetAllProducts();
         void InsertProduct(Proizvod product);
     }
 }
