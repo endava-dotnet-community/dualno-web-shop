@@ -1,4 +1,9 @@
 
+using Core.Abstractions.Repositories;
+using Core.Abstractions.Services;
+using Database.Repositories;
+using Services;
+
 namespace WebShop
 {
     public class Program
@@ -13,6 +18,9 @@ namespace WebShop
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddTransient<IProductService, ProductService>();
+            builder.Services.AddTransient<IProductRepository, ProductRepository>();
 
             var app = builder.Build();
 
