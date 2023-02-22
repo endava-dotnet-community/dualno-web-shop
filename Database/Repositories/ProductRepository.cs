@@ -32,11 +32,12 @@ namespace Database.Repositories
             return _products.Values.ToList();
         }
 
-        public void Insert(Product product)
+        public bool Insert(Product product)
         {
             product.Id = ++_id;
             _products.Add(product.Id, product);
             SaveDatabase();
+            return true;
         }
 
         public bool Update(int productId, Product product)

@@ -6,7 +6,7 @@ namespace Core.Abstractions.Repositories
     {
         Product? GetById(int productId);
         List<Product> GetAllProducts();
-        void Insert(Product product);
+        bool Insert(Product product);
         bool Update(int productId, Product product);
         bool Delete(int productId);
         List<Product> SearchByKeyWord(string keyoword);
