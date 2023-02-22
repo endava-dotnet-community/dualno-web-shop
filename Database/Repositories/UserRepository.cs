@@ -1,5 +1,6 @@
 ﻿using Core.Abstractions.Repositories;
 using Core.Domain;
+using Core.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Database.Repositories
     {
         private const string fileName = "WebShopUsers.json";
 
-        private Dictionary<int, User> _users = new Dictionary<int, User>();
+        private Dictionary<int, User> _users = null; 
         private int _id = 0;
 
         public UserRepository()
@@ -117,7 +118,25 @@ namespace Database.Repositories
             }
 
             if (_users == null)
-                _users = new Dictionary<int, User>();
+            {
+                _users = new Dictionary<int, User>
+                {
+                    {
+                        0,
+                        new User
+                        {
+                            Id = 0,
+                            Email = "admin@dualnoobrazovanje.com",
+                            FirstName = "Admin",
+                            LastName = "Admin",
+                            Password = Encryption.Encrypt("admin"),
+                            UserName = "admin"
+                        }
+                    }
+                };
+
+                SaveDatabase();
+            }
 
             _id = _users.Count == 0
                 ? 0

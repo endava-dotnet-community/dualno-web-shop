@@ -17,6 +17,6 @@ namespace Core.Abstractions.Services
         bool Delete(int id);
         UserViewModel GetUserByUsername(string username);
         UserViewModel GetUserByEmail(string email);
-
+        UserViewModel? Login(string userNameOrEMail, string password);
     }
 }

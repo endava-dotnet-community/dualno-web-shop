@@ -12,6 +12,9 @@ namespace WebShop
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession();
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -21,6 +24,8 @@ namespace WebShop
 
             builder.Services.AddTransient<IProductsService, ProductsService>();
             builder.Services.AddSingleton<IProductRepository, ProductRepository>();
+            builder.Services.AddTransient<IUsersService, UsersService>();
+            builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
             var app = builder.Build();
 
@@ -33,6 +38,7 @@ namespace WebShop
 
             app.UseAuthorization();
 
+            app.UseSession();
 
             app.MapControllers();
 

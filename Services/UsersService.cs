@@ -1,11 +1,13 @@
 ﻿using Core.Abstractions.Repositories;
 using Core.Abstractions.Services;
 using Core.Domain;
+using Core.Util;
 using Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 
@@ -85,13 +87,36 @@ namespace Services
                 FirstName = u.FirstName,
                 LastName = u.LastName,
                 Email = u.Email,
-                Password = Encrypt(u.Password),
+                Password = Encryption.Encrypt(u.Password),
                 UserName = u.UserName,
             };
         }
-        private string Encrypt (string password)
+
+        /// <summary>
+        /// Login method to check usename/email and password
+        /// </summary>
+        /// <param name="userNameOrEMail">username or email</param>
+        /// <param name="password">plain text password</param>
+        /// <returns></returns>
+        public UserViewModel? Login(string userNameOrEMail, string password)
         {
-            return password;
+            bool isEmail = Regex.IsMatch(userNameOrEMail, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase);
+
+            // check email or usename
+            User user = isEmail ? 
+                _repository.GetUserByEmail(userNameOrEMail) : 
+                _repository.GetUserByUsername(userNameOrEMail);
+
+            // not valid user
+            if (user == null) 
+                return null;
+
+            // check password
+            if(Encryption.Encrypt(password) != user.Password)
+                return null;
+
+            // convert to viewmodel
+            return MapToViewModel(user);
         }
     }
 }
