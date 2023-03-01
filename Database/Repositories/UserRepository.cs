@@ -1,5 +1,5 @@
 ﻿using Core.Abstractions.Repositories;
-using Core.Domain;
+using Domain;
 using Core.Util;
 using System;
 using System.Collections.Generic;
@@ -130,7 +130,8 @@ namespace Database.Repositories
                             FirstName = "Admin",
                             LastName = "Admin",
                             Password = Encryption.Encrypt("admin"),
-                            UserName = "admin"
+                            UserName = "admin",
+                            Roles = new List<UserRole> { UserRole.Administrator } 
                         }
                     }
                 };

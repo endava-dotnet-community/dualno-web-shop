@@ -1,5 +1,5 @@
 ﻿using Core.Abstractions.Services;
-using Core.Domain;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Models.ViewModels;
 
@@ -7,11 +7,12 @@ namespace WebShop.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class ProductsController : WebShopBaseController
     {
         private readonly IProductsService _productService;
 
-        public ProductsController(IProductsService productService)
+        public ProductsController(IProductsService productService, IUsersService usersService) 
+            : base(usersService)
         {
             _productService = productService;
         }
@@ -25,6 +26,11 @@ namespace WebShop.Controllers
         [HttpPost("products")]
         public IActionResult Insert([FromBody] ProductViewModel productModel)
         {
+            if (!CurrentUser.Roles.Contains(UserRole.Administrator))
+            {
+                throw new InvalidOperationException();
+            }
+
             _productService.Insert(productModel);
 
             return Ok();
@@ -45,12 +51,22 @@ namespace WebShop.Controllers
         [HttpDelete("products/{productId}")]
         public bool DeleteById(int productId)
         {
+            if (!CurrentUser.Roles.Contains(UserRole.Administrator))
+            {
+                throw new InvalidOperationException();
+            }
+
             return _productService.Delete(productId);
         }
 
         [HttpPut("products")]
         public bool UpdateProducts(int productId, ProductViewModel productViewModel)
         {
+            if (!CurrentUser.Roles.Contains(UserRole.Administrator))
+            {
+                throw new InvalidOperationException();
+            }
+
             return _productService.Update(productId, productViewModel);
         }
     }

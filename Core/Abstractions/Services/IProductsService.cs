@@ -1,4 +1,4 @@
-﻿using Core.Domain;
+﻿using Domain;
 using Models.ViewModels;
 
 namespace Core.Abstractions.Services

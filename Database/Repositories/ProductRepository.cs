@@ -1,5 +1,5 @@
 ﻿using Core.Abstractions.Repositories;
-using Core.Domain;
+using Domain;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

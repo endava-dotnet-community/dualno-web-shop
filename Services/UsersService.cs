@@ -1,6 +1,6 @@
 ﻿using Core.Abstractions.Repositories;
 using Core.Abstractions.Services;
-using Core.Domain;
+using Domain;
 using Core.Util;
 using Models.ViewModels;
 using System;
@@ -73,6 +73,7 @@ namespace Services
                 Email = u.Email,
                 Password = String.Empty,
                 UserName = u.UserName,
+                Roles= u.Roles,
             };
         }
 
@@ -89,6 +90,7 @@ namespace Services
                 Email = u.Email,
                 Password = Encryption.Encrypt(u.Password),
                 UserName = u.UserName,
+                Roles = u.Roles,
             };
         }
 

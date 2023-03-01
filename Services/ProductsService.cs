@@ -1,6 +1,6 @@
 ﻿using Core.Abstractions.Repositories;
 using Core.Abstractions.Services;
-using Core.Domain;
+using Domain;
 using Models.ViewModels;
 
 namespace Services

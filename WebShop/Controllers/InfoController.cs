@@ -1,14 +1,16 @@
+using Core.Abstractions.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebShop.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class InfoController : ControllerBase
+    public class InfoController : WebShopBaseController
     {
         private readonly ILogger<InfoController> _logger;
 
-        public InfoController(ILogger<InfoController> logger)
+        public InfoController(ILogger<InfoController> logger, IUsersService usersService) 
+            : base(usersService)
         {
             _logger = logger;
         }
