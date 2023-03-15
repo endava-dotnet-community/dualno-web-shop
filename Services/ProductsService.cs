@@ -1,6 +1,8 @@
 ﻿using Core.Abstractions.Repositories;
 using Core.Abstractions.Services;
 using Domain;
+using FluentValidation;
+using Models.Validators;
 using Models.ViewModels;
 
 namespace Services
@@ -8,10 +10,14 @@ namespace Services
     public class ProductsService : IProductsService
     {
         private readonly IProductRepository _repository;
+        private readonly IValidator<ProductViewModel> _viewModelValidator;
 
-        public ProductsService(IProductRepository productRepository)
+        public ProductsService(
+            IProductRepository productRepository,
+            IValidator<ProductViewModel> viewModelValidator)
         {
             _repository = productRepository;
+            _viewModelValidator = viewModelValidator;
         }
 
         public ProductViewModel? GetById(int productId)
@@ -30,6 +36,20 @@ namespace Services
 
         public void Insert(ProductViewModel productViewModel)
         {
+            try
+            {
+                _viewModelValidator.ValidateAndThrow(productViewModel);
+            }
+            catch (ValidationException ex)
+            {
+                var errorMessages = ex.Errors
+                    .Select(error => error.ErrorMessage);
+
+                var messagesJoined = string.Join('\n', errorMessages);
+
+                throw new Exception(messagesJoined);
+            }
+
             Product? product = MapFromViewModel(productViewModel);
 
             if (product == null)
