@@ -31,7 +31,14 @@ namespace WebShop.Controllers
                 throw new InvalidOperationException();
             }
 
-            _productService.Insert(productModel);
+            try
+            {
+                _productService.Insert(productModel);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Ok();
         }

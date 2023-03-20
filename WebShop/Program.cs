@@ -2,6 +2,9 @@
 using Core.Abstractions.Repositories;
 using Core.Abstractions.Services;
 using Database.Repositories;
+using FluentValidation;
+using Models.Validators;
+using Models.ViewModels;
 using Services;
 
 namespace WebShop
@@ -26,6 +29,8 @@ namespace WebShop
             builder.Services.AddSingleton<IProductRepository, ProductRepository>();
             builder.Services.AddTransient<IUsersService, UsersService>();
             builder.Services.AddSingleton<IUserRepository, UserRepository>();
+
+            builder.Services.AddSingleton<IValidator<ProductViewModel>, ProductViewModelValidator>();
 
             var app = builder.Build();
 
