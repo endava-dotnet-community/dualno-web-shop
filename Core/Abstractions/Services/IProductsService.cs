@@ -5,11 +5,11 @@ namespace Core.Abstractions.Services
 {
     public interface IProductsService
     {
-        ProductViewModel? GetById(int productId);
+        ProductViewModel? GetById(long productId);
         List<ProductViewModel?> GetAllProducts();
         void Insert(ProductViewModel product);
-        bool Update(int productId, ProductViewModel product);
-        bool Delete(int productId);
+        bool Update(long productId, ProductViewModel product);
+        bool Delete(long productId);
         List<ProductViewModel?> SearchByKeyWord(string keyoword);
     }
 }

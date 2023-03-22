@@ -10,17 +10,20 @@ namespace Services
     public class ProductsService : IProductsService
     {
         private readonly IProductRepository _repository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IValidator<ProductViewModel> _viewModelValidator;
 
         public ProductsService(
             IProductRepository productRepository,
+            ICategoryRepository categoryRepository,
             IValidator<ProductViewModel> viewModelValidator)
         {
             _repository = productRepository;
+            _categoryRepository = categoryRepository;
             _viewModelValidator = viewModelValidator;
         }
 
-        public ProductViewModel? GetById(int productId)
+        public ProductViewModel? GetById(long productId)
         {
             return MapToViewModel(_repository.GetById(productId));
         }
@@ -58,7 +61,7 @@ namespace Services
             _repository.Insert(product);
         }
 
-        public bool Update(int productId, ProductViewModel productViewModel)
+        public bool Update(long productId, ProductViewModel productViewModel)
         {
             Product? product = MapFromViewModel(productViewModel);
 
@@ -68,7 +71,7 @@ namespace Services
             return _repository.Update(productId, product);
         }
 
-        public bool Delete(int productId)
+        public bool Delete(long productId)
         {
             return _repository.Delete(productId);
         }
@@ -92,7 +95,7 @@ namespace Services
                 Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
-                Category = p.Category,
+                Category = _categoryRepository.GetById(p.CategoryId),
                 Description = p.Description,
             };
         }
@@ -107,7 +110,7 @@ namespace Services
                 Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
-                Category = p.Category,
+                CategoryId = p.Category.Id,
                 Description = p.Description,
             };
         }
