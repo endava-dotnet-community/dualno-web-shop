@@ -9,6 +9,7 @@ using Models.Validators;
 using Models.ViewModels;
 using Services;
 using WebShop.DatabaseEF.Entities;
+using WebShop.Middleware;
 
 namespace WebShop
 {
@@ -51,10 +52,12 @@ namespace WebShop
                 app.UseSwaggerUI();
             }
 
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
+
             app.UseAuthorization();
 
             app.UseSession();
-
+            
             app.MapControllers();
 
             app.Run();

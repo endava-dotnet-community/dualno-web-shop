@@ -3,6 +3,7 @@ using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Models.ViewModels;
 using System.Net;
+using Services.Exceptions;
 
 namespace WebShop.Controllers
 {
@@ -20,7 +21,7 @@ namespace WebShop.Controllers
         {
             if(!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
-                throw new InvalidOperationException();
+                throw new NotAuthorizedException();
             }
 
             return UsersService.GetAll();
