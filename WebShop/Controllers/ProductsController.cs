@@ -18,7 +18,7 @@ namespace WebShop.Controllers
         }
 
         [HttpGet("products")]
-        public List<ProductViewModel?> GetAllProducts()
+        public List<ProductViewModel> GetAllProducts()
         {
             return _productService.GetAllProducts();
         }
@@ -44,13 +44,13 @@ namespace WebShop.Controllers
         }
 
         [HttpGet("products/search/{keyword}")]
-        public List<ProductViewModel?> SearchByKeyword(string keyword)
+        public List<ProductViewModel> SearchByKeyword(string keyword)
         {
             return _productService.SearchByKeyWord(keyword);
         }
 
         [HttpGet("products/{productId}")]
-        public ProductViewModel? GetById(int productId)
+        public ProductViewModel GetById(int productId)
         {
             return _productService.GetById(productId);
         }

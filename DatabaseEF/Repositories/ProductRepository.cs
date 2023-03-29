@@ -20,7 +20,7 @@ namespace DatabaseEF.Repositories
 
         public bool Delete(long productId)
         {
-            ProductEntity? entity = _context.Products.Find(productId);
+            ProductEntity entity = _context.Products.Find(productId);
 
             if (entity == null)
                 return false;
@@ -39,13 +39,13 @@ namespace DatabaseEF.Repositories
                 .ToList();
         }
 
-        public Product? GetById(long productId)
+        public Product GetById(long productId)
         {
-            ProductEntity? entity = _context.Products.Find(productId);
+            ProductEntity entity = _context.Products.Find(productId);
             return MapFromEntity(entity);
         }
 
-        public bool Insert(Product? product)
+        public bool Insert(Product product)
         {
             if (product == null)
                 return false;
@@ -64,7 +64,7 @@ namespace DatabaseEF.Repositories
 
         public bool Update(long productId, Product product)
         {
-            ProductEntity? entity = _context.Products.Find(productId);
+            ProductEntity entity = _context.Products.Find(productId);
 
             if (entity == null)
                 return false;
@@ -79,7 +79,7 @@ namespace DatabaseEF.Repositories
             return true;
         }
 
-        private ProductEntity MapToEntity(Product? p)
+        private ProductEntity MapToEntity(Product p)
         {
             if (p == null)
                 return null;
@@ -94,7 +94,7 @@ namespace DatabaseEF.Repositories
             };
         }
 
-        private static Product MapFromEntity(ProductEntity? p)
+        private static Product MapFromEntity(ProductEntity p)
         {
             if (p == null)
                 return null;

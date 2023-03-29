@@ -31,7 +31,7 @@ namespace Services
         {
             return _repository
                 .GetAll()
-                .Select<User?, UserViewModel?>(u => MapToViewModel(u))
+                .Select<User, UserViewModel>(u => MapToViewModel(u))
                 .ToList();
         }
 
@@ -60,7 +60,7 @@ namespace Services
             return _repository.Update(userId, MapFromViewModel(user));
         }
 
-        private UserViewModel? MapToViewModel(User? u)
+        private UserViewModel MapToViewModel(User u)
         {
             if (u == null)
                 return null;
@@ -77,7 +77,7 @@ namespace Services
             };
         }
 
-        private User? MapFromViewModel(UserViewModel? u)
+        private User MapFromViewModel(UserViewModel u)
         {
             if (u == null)
                 return null;
@@ -100,7 +100,7 @@ namespace Services
         /// <param name="userNameOrEMail">username or email</param>
         /// <param name="password">plain text password</param>
         /// <returns></returns>
-        public UserViewModel? Login(string userNameOrEMail, string password)
+        public UserViewModel Login(string userNameOrEMail, string password)
         {
             bool isEmail = Regex.IsMatch(userNameOrEMail, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase);
 

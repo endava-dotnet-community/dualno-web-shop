@@ -23,16 +23,16 @@ namespace Services
             _viewModelValidator = viewModelValidator;
         }
 
-        public ProductViewModel? GetById(long productId)
+        public ProductViewModel GetById(long productId)
         {
             return MapToViewModel(_repository.GetById(productId));
         }
 
-        public List<ProductViewModel?> GetAllProducts()
+        public List<ProductViewModel> GetAllProducts()
         {
             return _repository
                 .GetAllProducts()
-                .Select<Product?, ProductViewModel?>(p => MapToViewModel(p))
+                .Select<Product, ProductViewModel>(p => MapToViewModel(p))
                 .Where(p => p != null)
                 .ToList();
         }
@@ -53,7 +53,7 @@ namespace Services
                 throw new Exception(messagesJoined);
             }
 
-            Product? product = MapFromViewModel(productViewModel);
+            Product product = MapFromViewModel(productViewModel);
 
             if (product == null)
                 throw new ArgumentNullException(nameof(productViewModel));
@@ -63,7 +63,7 @@ namespace Services
 
         public bool Update(long productId, ProductViewModel productViewModel)
         {
-            Product? product = MapFromViewModel(productViewModel);
+            Product product = MapFromViewModel(productViewModel);
 
             if (product == null)
                 throw new ArgumentNullException(nameof(productViewModel));
@@ -76,16 +76,16 @@ namespace Services
             return _repository.Delete(productId);
         }
 
-        public List<ProductViewModel?> SearchByKeyWord(string keyword)
+        public List<ProductViewModel> SearchByKeyWord(string keyword)
         {
             return _repository
                 .SearchByKeyWord(keyword)
-                .Select<Product?, ProductViewModel?>(p => MapToViewModel(p))
+                .Select<Product, ProductViewModel>(p => MapToViewModel(p))
                 .Where(p => p != null)
                 .ToList();
         }
 
-        private ProductViewModel? MapToViewModel(Product? p)
+        private ProductViewModel MapToViewModel(Product p)
         {
             if (p == null)
                 return null;
@@ -100,7 +100,7 @@ namespace Services
             };
         }
 
-        private Product? MapFromViewModel(ProductViewModel? p)
+        private Product MapFromViewModel(ProductViewModel p)
         {
             if (p == null)
                 return null;

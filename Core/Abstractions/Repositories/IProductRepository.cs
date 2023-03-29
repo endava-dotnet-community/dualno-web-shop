@@ -4,7 +4,7 @@ namespace Core.Abstractions.Repositories
 {
     public interface IProductRepository
     {
-        Product? GetById(long productId);
+        Product GetById(long productId);
         List<Product> GetAllProducts();
         bool Insert(Product product);
         bool Update(long productId, Product product);

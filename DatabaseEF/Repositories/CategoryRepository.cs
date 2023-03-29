@@ -14,7 +14,7 @@ namespace DatabaseEF.Repositories
 
         public bool Delete(long categoryId)
         {
-            CategoryEntity? entity = _context.Categories.Find(categoryId);
+            CategoryEntity entity = _context.Categories.Find(categoryId);
 
             if (entity == null)
                 return false;
@@ -25,7 +25,7 @@ namespace DatabaseEF.Repositories
             return true;
         }
 
-        public List<Category?> GetAllCategories()
+        public List<Category> GetAllCategories()
         {
             return _context
                 .Categories
@@ -33,7 +33,7 @@ namespace DatabaseEF.Repositories
                 .ToList();
         }
 
-        public Category? GetById(long categoryId)
+        public Category GetById(long categoryId)
         {
             return MapFromEntity(_context.Categories.Find(categoryId));
         }
@@ -43,7 +43,7 @@ namespace DatabaseEF.Repositories
             if(category == null) 
                 return false;
 
-            CategoryEntity? entity = MapToEntity(category);
+            CategoryEntity entity = MapToEntity(category);
 
             if(entity== null)
                 return false;
@@ -56,7 +56,7 @@ namespace DatabaseEF.Repositories
 
         public bool Update(long categoryId, Category category)
         {
-            CategoryEntity? entity = _context.Categories.Find(categoryId);
+            CategoryEntity entity = _context.Categories.Find(categoryId);
             
             if(entity== null) 
                 return false;
@@ -68,7 +68,7 @@ namespace DatabaseEF.Repositories
             return true;
         }
 
-        private Category? MapFromEntity(CategoryEntity? entity)
+        private Category MapFromEntity(CategoryEntity entity)
         {
             if(entity == null) 
                 return null;
@@ -80,7 +80,7 @@ namespace DatabaseEF.Repositories
             };
         }
 
-        private CategoryEntity? MapToEntity(Category? category)
+        private CategoryEntity MapToEntity(Category category)
         {
             if(category == null) 
                 return null;

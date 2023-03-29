@@ -13,7 +13,7 @@ public partial class ProductEntity
 
     public decimal Price { get; set; }
 
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     public virtual CategoryEntity Category { get; set; } = null!;
 }

@@ -29,7 +29,7 @@ namespace WebShop.Controllers
         [HttpPost("user/login")]
         public IActionResult Login(string userNameOrEMail, string password)
         {
-            UserViewModel? userViewModel = UsersService.Login(userNameOrEMail, password);
+            UserViewModel userViewModel = UsersService.Login(userNameOrEMail, password);
 
             if (userViewModel == null)
                 return NotFound();
