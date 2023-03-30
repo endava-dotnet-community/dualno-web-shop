@@ -4,6 +4,7 @@ using Domain;
 using FluentValidation;
 using Models.Validators;
 using Models.ViewModels;
+using Services.Exceptions;
 
 namespace Services
 {
@@ -25,7 +26,12 @@ namespace Services
 
         public ProductViewModel GetById(long productId)
         {
-            return MapToViewModel(_repository.GetById(productId));
+            var foundProduct = MapToViewModel(_repository.GetById(productId));
+
+            if (foundProduct == null)
+                throw new ResourceNotFoundException($"Product with id: {productId} was not found.");
+
+            return foundProduct;
         }
 
         public List<ProductViewModel> GetAllProducts()
@@ -39,19 +45,7 @@ namespace Services
 
         public void Insert(ProductViewModel productViewModel)
         {
-            try
-            {
-                _viewModelValidator.ValidateAndThrow(productViewModel);
-            }
-            catch (ValidationException ex)
-            {
-                var errorMessages = ex.Errors
-                    .Select(error => error.ErrorMessage);
-
-                var messagesJoined = string.Join('\n', errorMessages);
-
-                throw new Exception(messagesJoined);
-            }
+            _viewModelValidator.ValidateAndThrow(productViewModel);
 
             Product product = MapFromViewModel(productViewModel);
 
@@ -73,7 +67,12 @@ namespace Services
 
         public bool Delete(long productId)
         {
-            return _repository.Delete(productId);
+            bool isDeleted = _repository.Delete(productId);
+            if (!isDeleted)
+            {
+                throw new ResourceNotFoundException($"Product with id: {productId} was not found!");
+            }
+            return true;
         }
 
         public List<ProductViewModel> SearchByKeyWord(string keyword)

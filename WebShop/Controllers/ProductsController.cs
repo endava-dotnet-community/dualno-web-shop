@@ -2,6 +2,7 @@
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Models.ViewModels;
+using Services.Exceptions;
 
 namespace WebShop.Controllers
 {
@@ -28,18 +29,10 @@ namespace WebShop.Controllers
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
-                throw new InvalidOperationException();
+                throw new NotAuthorizedException();
             }
 
-            try
-            {
-                _productService.Insert(productModel);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+            _productService.Insert(productModel);
             return Ok();
         }
 
@@ -60,7 +53,7 @@ namespace WebShop.Controllers
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
-                throw new InvalidOperationException();
+                throw new NotAuthorizedException();
             }
 
             return _productService.Delete(productId);
@@ -71,7 +64,7 @@ namespace WebShop.Controllers
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
-                throw new InvalidOperationException();
+                throw new NotAuthorizedException();
             }
 
             return _productService.Update(productId, productViewModel);
