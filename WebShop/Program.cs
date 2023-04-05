@@ -35,6 +35,8 @@ namespace WebShop
             });
 
             builder.Services.AddTransient<IProductsService, ProductsService>();
+            builder.Services.AddTransient<ICategoryService, CategoryService>();
+
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
@@ -42,6 +44,7 @@ namespace WebShop
             builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
             builder.Services.AddSingleton<IValidator<ProductViewModel>, ProductViewModelValidator>();
+            builder.Services.AddSingleton<IValidator<CategoryViewModel>, CategoryViewModelValidator>();
 
             var app = builder.Build();
 

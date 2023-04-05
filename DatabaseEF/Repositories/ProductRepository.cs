@@ -59,7 +59,14 @@ namespace DatabaseEF.Repositories
 
         public List<Product> SearchByKeyWord(string keyword)
         {
-            throw new NotImplementedException();
+            return _context
+                .Products
+                .ToList()
+                .Where(p =>
+                    p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                .Select(p => MapFromEntity(p))
+                .ToList();
         }
 
         public bool Update(long productId, Product product)

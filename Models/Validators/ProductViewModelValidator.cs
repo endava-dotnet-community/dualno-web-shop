@@ -18,9 +18,9 @@ namespace Models.Validators
                 .NotEmpty()
                 .InclusiveBetween(0, decimal.MaxValue);
 
-            RuleFor(product => product.Description)
-                .Matches("^(\\w|\\s)*$")
-                .MaximumLength(1024);
+            //RuleFor(product => product.Description)
+            //    .Matches("^(\\w|\\s)*$")
+            //    .MaximumLength(1024);
         }
     }
 }
