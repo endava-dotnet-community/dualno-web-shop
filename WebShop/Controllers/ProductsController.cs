@@ -1,8 +1,10 @@
 ﻿using Core.Abstractions.Services;
 using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.ViewModels;
 using Services.Exceptions;
+using WebShop.Authorization.Constants;
 
 namespace WebShop.Controllers
 {
@@ -25,12 +27,13 @@ namespace WebShop.Controllers
         }
 
         [HttpPost("products")]
+        [Authorize(Policy = AuthorizationPolicies.RequireAdminPolicy)]
         public IActionResult Insert([FromBody] ProductViewModel productModel)
         {
-            if (!CurrentUser.Roles.Contains(UserRole.Administrator))
-            {
-                throw new NotAuthorizedException();
-            }
+            //if (!CurrentUser.Roles.Contains(UserRole.Administrator))
+            //{
+            //    throw new NotAuthorizedException();
+            //}
 
             _productService.Insert(productModel);
             return Ok();
