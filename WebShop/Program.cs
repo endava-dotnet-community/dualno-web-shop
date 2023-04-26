@@ -35,7 +35,7 @@ namespace WebShop
 
             builder.Services.AddDbContextPool<WebshopContext>(x => 
             {
-                x.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=\"C:\\Users\\mmiric\\Downloads\\DO (1)\\Webshop - Copy.mdf\";Integrated Security=True;");
+                x.UseSqlServer("pasteme");
             });
 
             builder.Services.AddHttpContextAccessor();
