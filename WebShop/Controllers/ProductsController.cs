@@ -1,8 +1,8 @@
 ﻿using Core.Abstractions.Services;
-using Domain;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.ViewModels;
-using Services.Exceptions;
+using WebShop.Authorization.Constants;
 
 namespace WebShop.Controllers
 {
@@ -25,13 +25,9 @@ namespace WebShop.Controllers
         }
 
         [HttpPost("products")]
+        [Authorize(Policy = AuthorizationPolicies.RequireAdminPolicy)]
         public IActionResult Insert([FromBody] ProductViewModel productModel)
         {
-            if (!CurrentUser.Roles.Contains(UserRole.Administrator))
-            {
-                throw new NotAuthorizedException();
-            }
-
             _productService.Insert(productModel);
             return Ok();
         }
@@ -49,24 +45,16 @@ namespace WebShop.Controllers
         }
 
         [HttpDelete("products/{productId}")]
+        [Authorize(Policy = AuthorizationPolicies.RequireAdminPolicy)]
         public bool DeleteById(int productId)
         {
-            if (!CurrentUser.Roles.Contains(UserRole.Administrator))
-            {
-                throw new NotAuthorizedException();
-            }
-
             return _productService.Delete(productId);
         }
 
         [HttpPut("products")]
+        [Authorize(Policy = AuthorizationPolicies.RequireAdminPolicy)]
         public bool UpdateProducts(int productId, ProductViewModel productViewModel)
         {
-            if (!CurrentUser.Roles.Contains(UserRole.Administrator))
-            {
-                throw new NotAuthorizedException();
-            }
-
             return _productService.Update(productId, productViewModel);
         }
     }

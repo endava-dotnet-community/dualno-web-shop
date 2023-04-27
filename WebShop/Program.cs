@@ -3,11 +3,15 @@ using Core.Abstractions.Repositories;
 using Core.Abstractions.Services;
 using DatabaseEF.Repositories;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Models.Validators;
 using Models.ViewModels;
 using Services;
+using WebShop.Authorization.Constants;
+using WebShop.Authorization.Handlers;
+using WebShop.Authorization.Requirements;
 using WebShop.DatabaseEF.Entities;
 using WebShop.Middleware;
 
@@ -31,7 +35,18 @@ namespace WebShop
 
             builder.Services.AddDbContextPool<WebshopContext>(x => 
             {
-                x.UseSqlServer("Server=CTSE-GORANZ;Database=Webshop;Trusted_Connection=True;");
+                x.UseSqlServer("pasteme");
+            });
+
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSingleton<IAuthorizationHandler, RequireAdminHandler>();
+            builder.Services.AddAuthorization(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .AddRequirements(new AdminRoleRequirement())
+                    .Build();
+
+                options.AddPolicy(AuthorizationPolicies.RequireAdminPolicy, policy);
             });
 
             builder.Services.AddTransient<IProductsService, ProductsService>();
@@ -57,9 +72,9 @@ namespace WebShop
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            app.UseAuthorization();
-
             app.UseSession();
+
+            app.UseAuthorization();
             
             app.UseCors(x => x  
                .AllowAnyOrigin()
