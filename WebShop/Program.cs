@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Models.Validators;
 using Models.ViewModels;
 using Services;
+using System.Configuration;
 using WebShop.Authorization.Constants;
 using WebShop.Authorization.Handlers;
 using WebShop.Authorization.Requirements;
@@ -23,6 +24,12 @@ namespace WebShop
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Configuration
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"}.json", optional: true)
+                .AddJsonFile("appsettings.my.json", optional: true, reloadOnChange: true);
+
+
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
 
@@ -35,7 +42,7 @@ namespace WebShop
 
             builder.Services.AddDbContextPool<WebshopContext>(x => 
             {
-                x.UseSqlServer("pasteme");
+                x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             builder.Services.AddHttpContextAccessor();
