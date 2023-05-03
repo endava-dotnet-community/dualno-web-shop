@@ -86,7 +86,7 @@ namespace DatabaseEF.Repositories
             return true;
         }
 
-        private ProductEntity MapToEntity(Product p)
+        private static ProductEntity MapToEntity(Product p)
         {
             if (p == null)
                 return null;

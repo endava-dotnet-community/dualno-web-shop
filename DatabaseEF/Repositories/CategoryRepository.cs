@@ -68,7 +68,7 @@ namespace DatabaseEF.Repositories
             return true;
         }
 
-        private Category MapFromEntity(CategoryEntity entity)
+        private static Category MapFromEntity(CategoryEntity entity)
         {
             if(entity == null) 
                 return null;
@@ -80,7 +80,7 @@ namespace DatabaseEF.Repositories
             };
         }
 
-        private CategoryEntity MapToEntity(Category category)
+        private static CategoryEntity MapToEntity(Category category)
         {
             if(category == null) 
                 return null;
