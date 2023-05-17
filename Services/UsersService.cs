@@ -9,58 +9,85 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Identity;
 
 namespace Services
 {
     public class UsersService : IUsersService
     {
-        private readonly IUserRepository _repository;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UsersService(IUserRepository repository)
+        public UsersService(UserManager<IdentityUser> userManager)
         {
-            _repository = repository;
+            _userManager = userManager;
         }
 
-        public bool Delete(int id)
+        public bool Delete(string id)
         {
-            return _repository.Delete(id);
+            return false;
         }
 
         public List<UserViewModel> GetAll()
         {
-            return _repository
-                .GetAll()
-                .Select<User, UserViewModel>(u => MapToViewModel(u))
+            return _userManager
+                .Users
+                .Select<IdentityUser, UserViewModel>(u => MapToViewModel(u))
                 .ToList();
         }
 
-        public UserViewModel GetById(int id)
+        public UserViewModel GetById(string id)
         {
-            return MapToViewModel(_repository.GetById(id));
+            IdentityUser identityUser = GetIdentityUser(id);
+
+            IList<string> roles = _userManager.GetRolesAsync(identityUser).Result;
+
+            return MapToViewModel(identityUser);
+        }
+
+        private IdentityUser GetIdentityUser(string id)
+        {
+            return _userManager.FindByIdAsync(id).Result;
         }
 
         public UserViewModel GetUserByEmail(string email)
         {
-            return MapToViewModel(_repository.GetUserByEmail(email));
+            return MapToViewModel(_userManager.FindByEmailAsync(email).Result);
         }
 
         public UserViewModel GetUserByUsername(string username)
         {
-            return MapToViewModel(_repository.GetUserByUsername(username));
+            return MapToViewModel(_userManager.FindByNameAsync(username).Result);
         }
 
         public bool Insert(UserViewModel user)
         {
-            return _repository.Insert(MapFromViewModel(user));
+            IdentityResult result = _userManager
+                .CreateAsync(
+                    new IdentityUser()
+                    {
+                        UserName = user.UserName,
+                        Email = user.Email
+                    },
+                    user.Password)
+                .Result;
+
+            return result.Succeeded;
         }
 
-        public bool Update(int userId, UserViewModel user)
+        public bool Update(string userId, UserViewModel user)
         {
-            return _repository.Update(userId, MapFromViewModel(user));
+            IdentityUser identityUser = GetIdentityUser(userId);
+
+            identityUser.Email = user.Email;
+
+            IdentityResult result = _userManager
+                .UpdateAsync(identityUser)
+                .Result;
+
+            return result.Succeeded;
         }
 
-        private UserViewModel MapToViewModel(User u)
+        private UserViewModel MapToViewModel(IdentityUser u)
         {
             if (u == null)
                 return null;
@@ -68,29 +95,12 @@ namespace Services
             return new UserViewModel
             {
                 Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
+                FirstName = "",
+                LastName = "",
                 Email = u.Email,
                 Password = String.Empty,
                 UserName = u.UserName,
-                Roles= u.Roles,
-            };
-        }
-
-        private User MapFromViewModel(UserViewModel u)
-        {
-            if (u == null)
-                return null;
-
-            return new User
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                Email = u.Email,
-                Password = Encryption.Encrypt(u.Password),
-                UserName = u.UserName,
-                Roles = u.Roles,
+                Roles = new List<UserRole>(),
             };
         }
 
@@ -102,23 +112,25 @@ namespace Services
         /// <returns></returns>
         public UserViewModel Login(string userNameOrEMail, string password)
         {
-            bool isEmail = Regex.IsMatch(userNameOrEMail, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase);
+            return null;
 
-            // check email or usename
-            User user = isEmail ? 
-                _repository.GetUserByEmail(userNameOrEMail) : 
-                _repository.GetUserByUsername(userNameOrEMail);
+            //bool isEmail = Regex.IsMatch(userNameOrEMail, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase);
 
-            // not valid user
-            if (user == null) 
-                return null;
+            //// check email or usename
+            //User user = isEmail ? 
+            //    _repository.GetUserByEmail(userNameOrEMail) : 
+            //    _repository.GetUserByUsername(userNameOrEMail);
 
-            // check password
-            if(Encryption.Encrypt(password) != user.Password)
-                return null;
+            //// not valid user
+            //if (user == null) 
+            //    return null;
 
-            // convert to viewmodel
-            return MapToViewModel(user);
+            //// check password
+            //if(Encryption.Encrypt(password) != user.Password)
+            //    return null;
+
+            //// convert to viewmodel
+            //return MapToViewModel(user);
         }
     }
 }

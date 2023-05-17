@@ -5,10 +5,10 @@ namespace Core.Abstractions.Services
     public interface IUsersService
     {
         List<UserViewModel> GetAll();
-        UserViewModel GetById(int id);
+        UserViewModel GetById(string id);
         bool Insert(UserViewModel user);
-        bool Update(int userId, UserViewModel user);
-        bool Delete(int id);
+        bool Update(string userId, UserViewModel user);
+        bool Delete(string id);
         UserViewModel GetUserByUsername(string username);
         UserViewModel GetUserByEmail(string email);
         UserViewModel? Login(string userNameOrEMail, string password);

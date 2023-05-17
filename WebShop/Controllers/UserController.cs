@@ -35,7 +35,7 @@ namespace WebShop.Controllers
             if (userViewModel == null)
                 return NotFound();
 
-            HttpContext.Session.SetInt32("UserId", userViewModel.Id);
+            HttpContext.Session.SetString("UserId", userViewModel.Id);
 
             return Ok();
         }

@@ -20,15 +20,15 @@ namespace WebShop.Controllers
             {
                 UserViewModel? userViewModel = null;
 
-                int? userId = HttpContext.Session.GetInt32("UserId");
+                string userId = HttpContext.Session.GetString("UserId");
                 if (userId != null)
-                    userViewModel = UsersService.GetById(userId.Value);
+                    userViewModel = UsersService.GetById(userId);
                 
                 if(userViewModel == null)
                 {
                     userViewModel = new UserViewModel
                     {
-                        Id = Int32.MinValue,
+                        Id = "",
                         UserName = "UnknownUser",
                         Roles = new List<UserRole>
                         {

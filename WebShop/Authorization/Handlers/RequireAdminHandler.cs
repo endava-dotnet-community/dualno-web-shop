@@ -24,12 +24,12 @@ namespace WebShop.Authorization.Handlers
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context, AdminRoleRequirement requirement)
         {
-            var userId = _httpContext.Session.GetInt32("UserId");
+            var userId = _httpContext.Session.GetString("UserId");
 
             if (userId == null)
                 throw new NotAuthorizedException();
 
-            var loggedInUser = _usersService.GetById(userId.Value);
+            var loggedInUser = _usersService.GetById(userId);
 
             foreach (var role in loggedInUser.Roles)
             {
