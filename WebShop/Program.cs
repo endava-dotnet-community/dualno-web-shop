@@ -60,7 +60,7 @@ namespace WebShop
 
 
             builder.Services.AddHttpContextAccessor();
-            builder.Services.AddSingleton<IAuthorizationHandler, RequireAdminHandler>();
+            builder.Services.AddScoped<IAuthorizationHandler, RequireAdminHandler>();
             builder.Services.AddAuthorization(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
@@ -77,7 +77,7 @@ namespace WebShop
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             builder.Services.AddTransient<IUsersService, UsersService>();
-            builder.Services.AddSingleton<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<UserManager<IdentityUser>>();
 
             builder.Services.AddSingleton<IValidator<ProductViewModel>, ProductViewModelValidator>();
             builder.Services.AddSingleton<IValidator<CategoryViewModel>, CategoryViewModelValidator>();
