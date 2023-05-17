@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace WebShop.DatabaseEF.Entities;
 
-public partial class WebshopContext : DbContext
+public partial class WebshopContext : IdentityUserContext<IdentityUser>
 {
     public WebshopContext()
     {
@@ -25,6 +27,8 @@ public partial class WebshopContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<CategoryEntity>(entity =>
         {
             entity.ToTable("Category");
