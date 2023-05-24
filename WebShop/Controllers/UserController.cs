@@ -4,6 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Models.ViewModels;
 using System.Net;
 using Services.Exceptions;
+using Microsoft.AspNetCore.Identity;
+using Models.Authentication;
+using Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebShop.Controllers
 {
@@ -16,6 +20,7 @@ namespace WebShop.Controllers
         {
         }
 
+        [Authorize]
         [HttpGet("users")]
         public List<UserViewModel> GetAllUsers()
         {
@@ -25,6 +30,17 @@ namespace WebShop.Controllers
             }
 
             return UsersService.GetAll();
+        }
+
+        [HttpPost("user/create")]
+        public IActionResult Create(UserViewModel userViewModel)
+        {
+            bool result = UsersService.Insert(userViewModel);
+
+            if (!result)
+                return BadRequest(StatusCodes.Status500InternalServerError);
+
+            return Ok();
         }
 
         [HttpPost("user/login")]
@@ -45,6 +61,27 @@ namespace WebShop.Controllers
         {
             HttpContext.Session.Clear();
             return Ok();
+        }
+
+        // POST: api/Users/BearerToken
+        [HttpPost("BearerToken")]
+        public ActionResult<AuthenticationResponse> CreateBearerToken(AuthenticationRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Bad credentials");
+            }
+
+            UserViewModel user = UsersService.Login(request.UserName, request.Password);
+
+            if (user == null)
+            {
+                return BadRequest("Bad credentials");
+            }
+
+            var token = UsersService.CreateToken(user.UserName);
+
+            return Ok(token);
         }
 
     }

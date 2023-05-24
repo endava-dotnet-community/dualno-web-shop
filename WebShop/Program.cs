@@ -16,6 +16,10 @@ using WebShop.Authorization.Requirements;
 using WebShop.DatabaseEF.Entities;
 using WebShop.Middleware;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 namespace WebShop
 {
@@ -41,13 +45,14 @@ namespace WebShop
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddDbContextPool<WebshopContext>(x => 
+            builder.Services.AddDbContextPool<WebshopContext>(x =>
             {
                 x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
             builder.Services
-                .AddIdentityCore<IdentityUser>(options => {
+                .AddIdentityCore<IdentityUser>(options =>
+                {
                     options.SignIn.RequireConfirmedAccount = false;
                     options.User.RequireUniqueEmail = true;
                     options.Password.RequireDigit = false;
@@ -78,9 +83,54 @@ namespace WebShop
 
             builder.Services.AddTransient<IUsersService, UsersService>();
             builder.Services.AddScoped<UserManager<IdentityUser>>();
+            builder.Services.AddScoped<JwtService>();
 
             builder.Services.AddSingleton<IValidator<ProductViewModel>, ProductViewModelValidator>();
             builder.Services.AddSingleton<IValidator<CategoryViewModel>, CategoryViewModelValidator>();
+
+            // add jwt authentication
+            builder.Services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidAudience = builder.Configuration["Jwt:Audience"],
+                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+                        )
+                    };
+                });
+
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+        {
+            new OpenApiSecurityScheme {
+                Reference = new OpenApiReference {
+                    Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+            });
+
 
             var app = builder.Build();
 
@@ -91,17 +141,21 @@ namespace WebShop
                 app.UseSwaggerUI();
             }
 
+
+
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseSession();
 
+            app.UseAuthentication();
+
             app.UseAuthorization();
-            
-            app.UseCors(x => x  
+
+            app.UseCors(x => x
                .AllowAnyOrigin()
                .AllowAnyMethod()
                .AllowAnyHeader());
-               
+
             app.MapControllers();
 
             app.Run();

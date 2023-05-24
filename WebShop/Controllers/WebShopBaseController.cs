@@ -18,11 +18,8 @@ namespace WebShop.Controllers
         {
             get
             {
-                UserViewModel? userViewModel = null;
-
-                string userId = HttpContext.Session.GetString("UserId");
-                if (userId != null)
-                    userViewModel = UsersService.GetById(userId);
+                UserViewModel userViewModel = 
+                    UsersService.GetUserByUsername(this.Request.HttpContext.User.Identity.Name);
                 
                 if(userViewModel == null)
                 {

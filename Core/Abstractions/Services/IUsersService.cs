@@ -1,4 +1,5 @@
-﻿using Models.ViewModels;
+﻿using Models.Authentication;
+using Models.ViewModels;
 
 namespace Core.Abstractions.Services
 {
@@ -11,6 +12,7 @@ namespace Core.Abstractions.Services
         bool Delete(string id);
         UserViewModel GetUserByUsername(string username);
         UserViewModel GetUserByEmail(string email);
-        UserViewModel? Login(string userNameOrEMail, string password);
+        UserViewModel Login(string userNameOrEMail, string password);
+        AuthenticationResponse CreateToken(string userName);
     }
 }

@@ -10,16 +10,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Models.Authentication;
 
 namespace Services
 {
     public class UsersService : IUsersService
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly JwtService _jwtService;
 
-        public UsersService(UserManager<IdentityUser> userManager)
+        public UsersService(UserManager<IdentityUser> userManager, JwtService jwtService)
         {
             _userManager = userManager;
+            _jwtService = jwtService;
         }
 
         public bool Delete(string id)
@@ -87,7 +90,7 @@ namespace Services
             return result.Succeeded;
         }
 
-        private UserViewModel MapToViewModel(IdentityUser u)
+        private static UserViewModel MapToViewModel(IdentityUser u)
         {
             if (u == null)
                 return null;
@@ -112,25 +115,30 @@ namespace Services
         /// <returns></returns>
         public UserViewModel Login(string userNameOrEMail, string password)
         {
-            return null;
+            bool isEmail = Regex.IsMatch(userNameOrEMail, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase);
 
-            //bool isEmail = Regex.IsMatch(userNameOrEMail, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase);
+            // check email or usename
+            IdentityUser identityUser = isEmail ?
+                _userManager.FindByEmailAsync(userNameOrEMail).Result :
+                _userManager.FindByNameAsync(userNameOrEMail).Result;
 
-            //// check email or usename
-            //User user = isEmail ? 
-            //    _repository.GetUserByEmail(userNameOrEMail) : 
-            //    _repository.GetUserByUsername(userNameOrEMail);
+            // not valid user
+            if (identityUser == null)
+                return null;
 
-            //// not valid user
-            //if (user == null) 
-            //    return null;
+            // check password
+            if (!_userManager.CheckPasswordAsync(identityUser, password).Result)
+                return null;
 
-            //// check password
-            //if(Encryption.Encrypt(password) != user.Password)
-            //    return null;
+            // convert to viewmodel
+            return MapToViewModel(identityUser);
+        }
 
-            //// convert to viewmodel
-            //return MapToViewModel(user);
+
+        public AuthenticationResponse CreateToken(string userName)
+        {
+            return _jwtService.CreateToken(
+                _userManager.FindByNameAsync(userName).Result);
         }
     }
 }
