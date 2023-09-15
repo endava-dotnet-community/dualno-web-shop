@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Domain;
 
 namespace WebShop
 {
@@ -62,7 +63,11 @@ namespace WebShop
                     options.Password.RequireLowercase = false;
                 })
                 .AddEntityFrameworkStores<WebshopContext>();
-
+            
+            builder.Services
+               .AddIdentity<IdentityUser, IdentityRole>()
+               .AddRoles<IdentityRole>()
+               .AddEntityFrameworkStores<WebshopContext>();
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IAuthorizationHandler, RequireAdminHandler>();
@@ -119,20 +124,21 @@ namespace WebShop
                     Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement {
-        {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
-                    Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
+                    {
+                        new OpenApiSecurityScheme {
+                            Reference = new OpenApiReference {
+                                Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
             });
 
-
             var app = builder.Build();
+
+            _ = CreateRolesAndUsers(app.Services.CreateScope());
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -140,8 +146,6 @@ namespace WebShop
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
@@ -159,6 +163,41 @@ namespace WebShop
             app.MapControllers();
 
             app.Run();
+        }
+
+        private async static Task CreateRolesAndUsers(IServiceScope scope)
+        {
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            if (!roleManager.Roles.Any())
+            {
+                foreach (UserRole userRole in Enum.GetValues(typeof(UserRole)))
+                {
+                    if (!roleManager.Roles.Any(r => r.Name.Equals(userRole.ToString())))
+                    {
+                        if (!await roleManager.RoleExistsAsync(userRole.ToString()))
+                            await roleManager.CreateAsync(new IdentityRole(userRole.ToString()));
+                    }
+                }
+            }
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+            if (userManager.Users.FirstOrDefault(u => u.UserName.Equals("Admin")) == null)
+            {
+                var user = new IdentityUser();
+                user.UserName = "Admin";
+                user.Email = "admin@endava.com";
+
+                string userPWD = "admin123";
+
+                var chkUser = userManager.CreateAsync(user, userPWD);
+
+                if (chkUser.Result.Succeeded)
+                {
+                    var result1 = userManager.AddToRoleAsync(user, UserRole.Administrator.ToString());
+                }
+            }
         }
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace WebShop.DatabaseEF.Entities;
 
-public partial class WebshopContext : IdentityUserContext<IdentityUser>
+public partial class WebshopContext : IdentityDbContext<IdentityUser>
 {
     public WebshopContext()
     {
