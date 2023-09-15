@@ -33,9 +33,9 @@ namespace WebShop.Controllers
         }
 
         [HttpPost("user/create")]
-        public IActionResult Create(UserViewModel userViewModel)
+        public async Task<IActionResult> Create(UserViewModel userViewModel)
         {
-            bool result = UsersService.Insert(userViewModel);
+            bool result = await UsersService.Insert(userViewModel);
 
             if (!result)
                 return BadRequest(StatusCodes.Status500InternalServerError);
@@ -44,9 +44,9 @@ namespace WebShop.Controllers
         }
 
         [HttpPost("user/login")]
-        public IActionResult Login(string userNameOrEMail, string password)
+        public async Task<IActionResult> Login(string userNameOrEMail, string password)
         {
-            UserViewModel userViewModel = UsersService.Login(userNameOrEMail, password);
+            UserViewModel userViewModel = await UsersService.Login(userNameOrEMail, password);
 
             if (userViewModel == null)
                 return NotFound();
@@ -65,14 +65,14 @@ namespace WebShop.Controllers
 
         // POST: api/Users/BearerToken
         [HttpPost("BearerToken")]
-        public ActionResult<AuthenticationResponse> CreateBearerToken(AuthenticationRequest request)
+        public async Task<ActionResult<AuthenticationResponse>> CreateBearerToken(AuthenticationRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest("Bad credentials");
             }
 
-            UserViewModel user = UsersService.Login(request.UserName, request.Password);
+            UserViewModel user = await UsersService.Login(request.UserName, request.Password);
 
             if (user == null)
             {

@@ -21,7 +21,7 @@ namespace WebShop.Authorization.Handlers
             ArgumentNullException.ThrowIfNull(_httpContext);
         }
 
-        protected override Task HandleRequirementAsync(
+        protected override async Task HandleRequirementAsync(
             AuthorizationHandlerContext context, AdminRoleRequirement requirement)
         {
             var userId = _httpContext.Session.GetString("UserId");
@@ -29,14 +29,14 @@ namespace WebShop.Authorization.Handlers
             if (userId == null)
                 throw new NotAuthorizedException();
 
-            var loggedInUser = _usersService.GetById(userId);
+            var loggedInUser = await _usersService.GetById(userId);
 
             foreach (var role in loggedInUser.Roles)
             {
                 if (role == UserRole.Administrator)
                 {
                     context.Succeed(requirement);
-                    return Task.CompletedTask;
+                    return;
                 }
             }
 

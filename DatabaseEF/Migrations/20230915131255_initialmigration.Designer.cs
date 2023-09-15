@@ -12,8 +12,8 @@ using WebShop.DatabaseEF.Entities;
 namespace DatabaseEF.Migrations
 {
     [DbContext(typeof(WebshopContext))]
-    [Migration("20230510121135_AddIdentityTables")]
-    partial class AddIdentityTables
+    [Migration("20230915131255_initialmigration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

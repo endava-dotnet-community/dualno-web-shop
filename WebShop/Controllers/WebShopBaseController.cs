@@ -19,7 +19,7 @@ namespace WebShop.Controllers
             get
             {
                 UserViewModel userViewModel = 
-                    UsersService.GetUserByUsername(this.Request.HttpContext.User.Identity.Name);
+                    UsersService.GetUserByUsername(this.Request.HttpContext.User.Identity.Name).Result;
                 
                 if(userViewModel == null)
                 {
