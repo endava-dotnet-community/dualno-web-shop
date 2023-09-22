@@ -19,55 +19,55 @@ namespace WebShop.Controllers
         }
 
         [HttpGet("category")]
-        public List<CategoryViewModel> GetAllCategory()
+        public async Task<List<CategoryViewModel>> GetAllCategory()
         {
-            return _categoryService.GetAllCategories();
+            return await _categoryService.GetAllCategoriesAsync();
         }
 
         [HttpPost("category")]
-        public IActionResult Insert([FromBody] CategoryViewModel productModel)
+        public async Task<IActionResult> Insert([FromBody] CategoryViewModel productModel)
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
                 throw new NotAuthorizedException();
             }
 
-            _categoryService.Insert(productModel);
+            await _categoryService.InsertAsync(productModel);
             return Ok();
         }
 
         [HttpGet("category/search/{keyword}")]
-        public List<CategoryViewModel> SearchByKeyword(string keyword)
+        public async Task<List<CategoryViewModel>> SearchByKeyword(string keyword)
         {
-            return _categoryService.SearchByKeyWord(keyword);
+            return await _categoryService.SearchByKeyWordAsync(keyword);
         }
 
         [HttpGet("category/{productId}")]
-        public CategoryViewModel GetById(int productId)
+        public async Task<CategoryViewModel> GetById(int productId)
         {
-            return _categoryService.GetById(productId);
+            return await _categoryService.GetByIdAsync(productId);
         }
 
         [HttpDelete("category/{productId}")]
-        public bool DeleteById(int productId)
+        public async Task<bool> DeleteById(int productId)
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
                 throw new NotAuthorizedException();
             }
 
-            return _categoryService.Delete(productId);
+            return await _categoryService.DeleteAsync(productId);
         }
 
         [HttpPut("category")]
-        public bool UpdateCategory(int productId, CategoryViewModel productViewModel)
+        public async Task<bool> UpdateCategory(int productId, CategoryViewModel productViewModel)
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
                 throw new NotAuthorizedException();
             }
 
-            return _categoryService.Update(productId, productViewModel);
+            return await _categoryService.UpdateAsync(productId, productViewModel);
         }
     }
 }

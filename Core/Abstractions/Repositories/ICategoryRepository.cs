@@ -4,10 +4,10 @@ namespace Core.Abstractions.Repositories
 {
     public interface ICategoryRepository
     {
-        Category GetById(long categoryId);
-        List<Category> GetAllCategories();
-        bool Insert(Category category);
-        bool Update(long categoryId, Category category);
-        bool Delete(long categoryId);
+        Task<Category> GetByIdAsync(long categoryId);
+        Task<List<Category>> GetAllCategoriesAsync();
+        Task<bool> InsertAsync(Category category);
+        Task<bool> UpdateAsync(long categoryId, Category category);
+        Task<bool> DeleteAsync(long categoryId);
     }
 }

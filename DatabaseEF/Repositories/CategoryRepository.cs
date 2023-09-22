@@ -1,5 +1,6 @@
 ﻿using Core.Abstractions.Repositories;
 using Domain;
+using System.Data.Entity;
 using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEF.Repositories
@@ -12,20 +13,9 @@ namespace DatabaseEF.Repositories
             _context = dbContext;
         }
 
-        public bool Delete(long categoryId)
-        {
-            CategoryEntity entity = _context.Categories.Find(categoryId);
-
-            if (entity == null)
-                return false;
-
-            _context.Categories.Remove(entity);
-            _context.SaveChanges();
-
-            return true;
-        }
-
-        public List<Category> GetAllCategories()
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+        public async Task<List<Category>> GetAllCategoriesAsync()
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
             return _context
                 .Categories
@@ -33,12 +23,12 @@ namespace DatabaseEF.Repositories
                 .ToList();
         }
 
-        public Category GetById(long categoryId)
+        public async Task<Category> GetByIdAsync(long categoryId)
         {
-            return MapFromEntity(_context.Categories.Find(categoryId));
+            return MapFromEntity(await _context.Categories.FindAsync(categoryId));
         }
 
-        public bool Insert(Category category)
+        public async Task<bool> InsertAsync(Category category)
         {
             if(category == null) 
                 return false;
@@ -48,23 +38,36 @@ namespace DatabaseEF.Repositories
             if(entity== null)
                 return false;
 
-            _context.Categories.Add(entity);
-            _context.SaveChanges();
+            await _context.Categories.AddAsync(entity);
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public bool Update(long categoryId, Category category)
+        public async Task<bool> UpdateAsync(long categoryId, Category category)
         {
-            CategoryEntity entity = _context.Categories.Find(categoryId);
+            CategoryEntity entity = await _context.Categories.FindAsync(categoryId);
             
             if(entity== null) 
                 return false;
             
             entity.Name= category.Name;
             
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(long categoryId)
+        {
+            CategoryEntity entity = await _context.Categories.FindAsync(categoryId);
+
+            if (entity == null)
+                return false;
+
+            _context.Categories.Remove(entity);
+            await _context.SaveChangesAsync();
+
             return true;
         }
 

@@ -94,7 +94,7 @@ namespace Services
                 Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
-                Category = _categoryRepository.GetById(p.CategoryId),
+                Category = _categoryRepository.GetByIdAsync(p.CategoryId).Result,
                 Description = p.Description,
             };
         }
