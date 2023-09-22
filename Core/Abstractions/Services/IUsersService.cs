@@ -13,6 +13,7 @@ namespace Core.Abstractions.Services
         Task<UserViewModel> GetUserByUsername(string username);
         Task<UserViewModel> GetUserByEmail(string email);
         Task<UserViewModel> Login(string userNameOrEMail, string password);
+        Task Logout();
         Task<AuthenticationResponse> CreateToken(string userName);
     }
 }

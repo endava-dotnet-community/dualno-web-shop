@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Domain;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace WebShop
 {
@@ -61,8 +63,8 @@ namespace WebShop
                     options.Password.RequireUppercase = false;
                     options.Password.RequireLowercase = false;
                 })
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<WebshopContext>();
-
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IAuthorizationHandler, RequireAdminHandler>();
@@ -83,6 +85,8 @@ namespace WebShop
 
             builder.Services.AddTransient<IUsersService, UsersService>();
             builder.Services.AddScoped<UserManager<IdentityUser>>();
+            builder.Services.AddScoped<SignInManager<IdentityUser>>();
+            builder.Services.AddScoped<RoleManager<IdentityRole>>();
             builder.Services.AddScoped<JwtService>();
 
             builder.Services.AddSingleton<IValidator<ProductViewModel>, ProductViewModelValidator>();
@@ -90,7 +94,13 @@ namespace WebShop
 
             // add jwt authentication
             builder.Services
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddAuthentication(x =>
+                {
+                    x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(IdentityConstants.ApplicationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters()
@@ -147,6 +157,8 @@ namespace WebShop
 
             app.UseSession();
 
+            _ = CreateRolesAndUsers(app.Services.CreateScope());
+
             app.UseAuthentication();
 
             app.UseAuthorization();
@@ -160,5 +172,40 @@ namespace WebShop
 
             app.Run();
         }
+        private async static Task CreateRolesAndUsers(IServiceScope scope)
+        {
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            if (!roleManager.Roles.Any())
+            {
+                foreach (UserRole userRole in Enum.GetValues(typeof(UserRole)))
+                {
+                    if (!roleManager.Roles.Any(r => r.Name.Equals(userRole.ToString())))
+                    {
+                        if (!await roleManager.RoleExistsAsync(userRole.ToString()))
+                            await roleManager.CreateAsync(new IdentityRole(userRole.ToString()));
+                    }
+                }
+            }
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+
+            if (userManager.Users.FirstOrDefault(u => u.UserName.Equals("Admin")) == null)
+            {
+                var user = new IdentityUser();
+                user.UserName = "Admin";
+                user.Email = "admin@endava.com";
+
+                string userPWD = "admin123";
+
+                var chkUser = userManager.CreateAsync(user, userPWD);
+
+                if (chkUser.Result.Succeeded)
+                {
+                    var result1 = userManager.AddToRoleAsync(user, UserRole.Administrator.ToString());
+                }
+            }
+        }
+
     }
 }

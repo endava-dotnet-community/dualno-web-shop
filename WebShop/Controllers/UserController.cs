@@ -57,8 +57,9 @@ namespace WebShop.Controllers
         }
 
         [HttpGet("user/logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            await UsersService.Logout();
             HttpContext.Session.Clear();
             return Ok();
         }
@@ -79,7 +80,7 @@ namespace WebShop.Controllers
                 return BadRequest("Bad credentials");
             }
 
-            var token = UsersService.CreateToken(user.UserName);
+            var token = await UsersService.CreateToken(user.UserName);
 
             return Ok(token);
         }

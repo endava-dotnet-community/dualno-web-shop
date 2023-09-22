@@ -9,14 +9,17 @@ namespace Services
 {
     public class UsersService : IUsersService
     {
-        private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly JwtService _jwtService;
 
-        public UsersService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, JwtService jwtService)
+        public UsersService(
+            RoleManager<IdentityRole> roleManager,
+            SignInManager<IdentityUser> signInManager,
+            JwtService jwtService)
         {
-            _userManager = userManager;
             _roleManager = roleManager;
+            _signInManager = signInManager;
             _jwtService = jwtService;
         }
 
@@ -27,7 +30,7 @@ namespace Services
 
         public List<UserViewModel> GetAll()
         {
-            return _userManager
+            return _signInManager.UserManager
                 .Users
                 .Select<IdentityUser, UserViewModel>(u => MapToViewModel(u).Result)
                 .ToList();
@@ -37,19 +40,19 @@ namespace Services
         {
             IdentityUser identityUser = await GetIdentityUser(id);
 
-            IList<string> roles = await _userManager.GetRolesAsync(identityUser);
+            IList<string> roles = await _signInManager.UserManager.GetRolesAsync(identityUser);
 
             return await MapToViewModel(identityUser);
         }
 
         private async Task<IdentityUser> GetIdentityUser(string id)
         {
-            return await _userManager.FindByIdAsync(id);
+            return await _signInManager.UserManager.FindByIdAsync(id);
         }
 
         public async Task<UserViewModel> GetUserByEmail(string email)
         {
-            return await MapToViewModel(await _userManager.FindByEmailAsync(email));
+            return await MapToViewModel(await _signInManager.UserManager.FindByEmailAsync(email));
         }
 
         public async Task<UserViewModel> GetUserByUsername(string username)
@@ -59,12 +62,12 @@ namespace Services
                 // Handle the case where the username is null or empty
                 // You might want to throw an exception or return an appropriate response
             }
-            return await MapToViewModel(await _userManager.FindByNameAsync(username));
+            return await MapToViewModel(await _signInManager.UserManager.FindByNameAsync(username));
         }
 
         public async Task<bool> Insert(UserViewModel user)
         {
-            IdentityResult result = await _userManager
+            IdentityResult result = await _signInManager.UserManager
                 .CreateAsync(
                     new IdentityUser()
                     {
@@ -76,7 +79,7 @@ namespace Services
             if (!result.Succeeded)
                 return false;
 
-            IdentityUser identityUser = _userManager.Users.FirstOrDefault(u => u.UserName.Equals(user.UserName));
+            IdentityUser identityUser = _signInManager.UserManager.Users.FirstOrDefault(u => u.UserName.Equals(user.UserName));
             foreach (UserRole role in user.Roles)
             {
                 if (!await _roleManager.RoleExistsAsync(role.ToString()))
@@ -90,7 +93,7 @@ namespace Services
                     }
                 }
 
-                var addToRoleResult = await _userManager.AddToRoleAsync(identityUser, role.ToString());
+                var addToRoleResult = await _signInManager.UserManager.AddToRoleAsync(identityUser, role.ToString());
             }
 
             return result.Succeeded;
@@ -102,7 +105,7 @@ namespace Services
 
             identityUser.Email = user.Email;
 
-            IdentityResult result = await _userManager.UpdateAsync(identityUser);
+            IdentityResult result = await _signInManager.UserManager.UpdateAsync(identityUser);
 
             if (!result.Succeeded)
                 return false;
@@ -110,13 +113,13 @@ namespace Services
             // Remove the user from all roles
             foreach (UserRole role in await GetRolesForIdentityUser(identityUser))
             {
-                await _userManager.RemoveFromRoleAsync(identityUser, role.ToString());
+                await _signInManager.UserManager.RemoveFromRoleAsync(identityUser, role.ToString());
             }
 
             // Add the user to the selected roles
             foreach (UserRole role in user.Roles)
             {
-                await _userManager.AddToRoleAsync(identityUser, role.ToString());
+                await _signInManager.UserManager.AddToRoleAsync(identityUser, role.ToString());
             }
 
             return true;
@@ -127,7 +130,7 @@ namespace Services
             List<UserRole> roles = new List<UserRole>();
             foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
             {
-                if (await _userManager.IsInRoleAsync(user, role.ToString()))
+                if (await _signInManager.UserManager.IsInRoleAsync(user, role.ToString()))
                 {
                     roles.Add(role);
                 }
@@ -169,24 +172,31 @@ namespace Services
 
             // check email or usename
             IdentityUser identityUser = isEmail ?
-                await _userManager.FindByEmailAsync(userNameOrEMail) :
-                await _userManager.FindByNameAsync(userNameOrEMail);
+                await _signInManager.UserManager.FindByEmailAsync(userNameOrEMail) :
+                await _signInManager.UserManager.FindByNameAsync(userNameOrEMail);
 
             // not valid user
             if (identityUser == null)
                 return null;
 
             // check password
-            if (!await _userManager.CheckPasswordAsync(identityUser, password))
+            if (!await _signInManager.UserManager.CheckPasswordAsync(identityUser, password))
                 return null;
+
+            await _signInManager.SignInAsync(identityUser, false);
 
             // convert to viewmodel
             return await MapToViewModel(identityUser);
         }
 
+        public async Task Logout()
+        {
+            await _signInManager.SignOutAsync();
+        }
+
         public async Task<AuthenticationResponse> CreateToken(string userName)
         {
-            return _jwtService.CreateToken(await _userManager.FindByNameAsync(userName));
+            return _jwtService.CreateToken(await _signInManager.UserManager.FindByNameAsync(userName));
         }
     }
 }
