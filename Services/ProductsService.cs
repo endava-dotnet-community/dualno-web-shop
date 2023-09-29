@@ -24,9 +24,9 @@ namespace Services
             _viewModelValidator = viewModelValidator;
         }
 
-        public ProductViewModel GetById(long productId)
+        public async Task<ProductViewModel> GetByIdAsync(long productId)
         {
-            var foundProduct = MapToViewModel(_repository.GetById(productId));
+            var foundProduct = MapToViewModel(await _repository.GetByIdAsync(productId));
 
             if (foundProduct == null)
                 throw new ResourceNotFoundException($"Product with id: {productId} was not found.");
@@ -34,16 +34,16 @@ namespace Services
             return foundProduct;
         }
 
-        public List<ProductViewModel> GetAllProducts()
+        public async Task<List<ProductViewModel>> GetAllProductsAsync()
         {
-            return _repository
-                .GetAllProducts()
+            return (await _repository
+                .GetAllProductsAsync())
                 .Select<Product, ProductViewModel>(p => MapToViewModel(p))
                 .Where(p => p != null)
                 .ToList();
         }
 
-        public void Insert(ProductViewModel productViewModel)
+        public async Task InsertAsync(ProductViewModel productViewModel)
         {
             _viewModelValidator.ValidateAndThrow(productViewModel);
 
@@ -52,22 +52,22 @@ namespace Services
             if (product == null)
                 throw new ArgumentNullException(nameof(productViewModel));
 
-            _repository.Insert(product);
+            await _repository.InsertAsync(product);
         }
 
-        public bool Update(long productId, ProductViewModel productViewModel)
+        public async Task<bool> UpdateAsync(long productId, ProductViewModel productViewModel)
         {
             Product product = MapFromViewModel(productViewModel);
 
             if (product == null)
                 throw new ArgumentNullException(nameof(productViewModel));
 
-            return _repository.Update(productId, product);
+            return  await _repository.UpdateAsync(productId, product);
         }
 
-        public bool Delete(long productId)
+        public async Task<bool> DeleteAsync(long productId)
         {
-            bool isDeleted = _repository.Delete(productId);
+            bool isDeleted = await _repository.DeleteAsync(productId);
             if (!isDeleted)
             {
                 throw new ResourceNotFoundException($"Product with id: {productId} was not found!");
@@ -75,10 +75,10 @@ namespace Services
             return true;
         }
 
-        public List<ProductViewModel> SearchByKeyWord(string keyword)
+        public async Task<List<ProductViewModel>> SearchByKeyWordAsync(string keyword)
         {
-            return _repository
-                .SearchByKeyWord(keyword)
+            return (await _repository
+                .SearchByKeyWordAsync(keyword))
                 .Select<Product, ProductViewModel>(p => MapToViewModel(p))
                 .Where(p => p != null)
                 .ToList();

@@ -18,20 +18,20 @@ namespace DatabaseEF.Repositories
             _context = dbContext;
         }
 
-        public bool Delete(long productId)
+        public async Task<bool> DeleteAsync(long productId)
         {
-            ProductEntity entity = _context.Products.Find(productId);
+            ProductEntity entity = await _context.Products.FindAsync(productId);
 
             if (entity == null)
                 return false;
 
             _context.Products.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }
 
-        public List<Product> GetAllProducts()
+        public async Task<List<Product>> GetAllProductsAsync()
         {
             return _context
                 .Products
@@ -39,27 +39,27 @@ namespace DatabaseEF.Repositories
                 .ToList();
         }
 
-        public Product GetById(long productId)
+        public async Task<Product> GetByIdAsync(long productId)
         {
-            ProductEntity entity = _context.Products.Find(productId);
+            ProductEntity entity = (await _context.Products.FindAsync(productId));
             return MapFromEntity(entity);
         }
 
-        public bool Insert(Product product)
+        public async Task<bool> InsertAsync(Product product)
         {
             if (product == null)
                 return false;
 
             ProductEntity entity = MapToEntity(product);
-            _context.Products.Add(entity);
-            _context.SaveChanges();
+            await _context.Products.AddAsync(entity);
+            await _context.SaveChangesAsync();
             
             return true;
         }
 
-        public List<Product> SearchByKeyWord(string keyword)
+        public async Task<List<Product>> SearchByKeyWordAsync(string keyword)
         {
-            return _context
+            return  _context
                 .Products
                 .ToList()
                 .Where(p =>
@@ -69,9 +69,9 @@ namespace DatabaseEF.Repositories
                 .ToList();
         }
 
-        public bool Update(long productId, Product product)
+        public async Task<bool> UpdateAsync(long productId, Product product)
         {
-            ProductEntity entity = _context.Products.Find(productId);
+            ProductEntity entity = await _context.Products.FindAsync(productId);
 
             if (entity == null)
                 return false;
@@ -81,7 +81,7 @@ namespace DatabaseEF.Repositories
             entity.Price = product.Price;
             entity.CategoryId = product.CategoryId;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }

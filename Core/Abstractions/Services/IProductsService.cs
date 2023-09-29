@@ -5,11 +5,11 @@ namespace Core.Abstractions.Services
 {
     public interface IProductsService
     {
-        ProductViewModel? GetById(long productId);
-        List<ProductViewModel?> GetAllProducts();
-        void Insert(ProductViewModel product);
-        bool Update(long productId, ProductViewModel product);
-        bool Delete(long productId);
-        List<ProductViewModel?> SearchByKeyWord(string keyoword);
+        Task<ProductViewModel?> GetByIdAsync(long productId);
+        Task<List<ProductViewModel?>> GetAllProductsAsync();
+        Task InsertAsync(ProductViewModel product);
+        Task<bool> UpdateAsync(long productId, ProductViewModel product);
+        Task<bool> DeleteAsync(long productId);
+        Task<List<ProductViewModel?>> SearchByKeyWordAsync(string keyoword);
     }
 }
