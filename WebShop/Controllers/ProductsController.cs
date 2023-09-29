@@ -19,43 +19,43 @@ namespace WebShop.Controllers
         }
 
         [HttpGet("products")]
-        public List<ProductViewModel> GetAllProducts()
+        public async Task<List<ProductViewModel>> GetAllProducts()
         {
-            return _productService.GetAllProducts();
+            return await _productService.GetAllProductsAsync();
         }
 
         [HttpPost("products")]
         [Authorize(Policy = AuthorizationPolicies.RequireAdminPolicy)]
-        public IActionResult Insert([FromBody] ProductViewModel productModel)
+        public async Task<IActionResult> Insert([FromBody] ProductViewModel productModel)
         {
-            _productService.Insert(productModel);
+            await _productService.InsertAsync(productModel);
             return Ok();
         }
 
         [HttpGet("products/search/{keyword}")]
-        public List<ProductViewModel> SearchByKeyword(string keyword)
+        public async Task<List<ProductViewModel>> SearchByKeyword(string keyword)
         {
-            return _productService.SearchByKeyWord(keyword);
+            return await _productService.SearchByKeyWordAsync(keyword);
         }
 
         [HttpGet("products/{productId}")]
-        public ProductViewModel GetById(int productId)
+        public async Task<ProductViewModel> GetById(int productId)
         {
-            return _productService.GetById(productId);
+            return await _productService.GetByIdAsync(productId);
         }
 
         [HttpDelete("products/{productId}")]
         [Authorize(Policy = AuthorizationPolicies.RequireAdminPolicy)]
-        public bool DeleteById(int productId)
+        public async Task<bool> DeleteById(int productId)
         {
-            return _productService.Delete(productId);
+            return await _productService.DeleteAsync(productId);
         }
 
         [HttpPut("products")]
         [Authorize(Policy = AuthorizationPolicies.RequireAdminPolicy)]
-        public bool UpdateProducts(int productId, ProductViewModel productViewModel)
+        public async Task<bool> UpdateProducts(int productId, ProductViewModel productViewModel)
         {
-            return _productService.Update(productId, productViewModel);
+            return await _productService.UpdateAsync(productId, productViewModel);
         }
     }
 }

@@ -4,11 +4,11 @@ namespace Core.Abstractions.Repositories
 {
     public interface IProductRepository
     {
-        Product GetById(long productId);
-        List<Product> GetAllProducts();
-        bool Insert(Product product);
-        bool Update(long productId, Product product);
-        bool Delete(long productId);
-        List<Product> SearchByKeyWord(string keyword);
+        Task<Product> GetByIdAsync(long productId);
+        Task<List<Product>> GetAllProductsAsync();
+        Task<bool> InsertAsync(Product product);
+        Task<bool> UpdateAsync(long productId, Product product);
+        Task<bool> DeleteAsync(long productId);
+        Task<List<Product>> SearchByKeyWordAsync(string keyword);
     }
 }
