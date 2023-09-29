@@ -18,10 +18,14 @@ namespace WebShop.Controllers
         {
             get
             {
-                UserViewModel userViewModel = 
-                    UsersService.GetUserByUsername(this.Request.HttpContext.User.Identity.Name).Result;
-                
-                if(userViewModel == null)
+                UserViewModel userViewModel = null;
+
+                if (!string.IsNullOrEmpty(this.Request.HttpContext.User.Identity.Name))
+                {
+                    userViewModel = UsersService.GetUserByUsername(this.Request.HttpContext.User.Identity.Name).Result;
+                }
+
+                if (userViewModel == null)
                 {
                     userViewModel = new UserViewModel
                     {
@@ -37,6 +41,5 @@ namespace WebShop.Controllers
                 return userViewModel;
             }
         }
-
     }
 }

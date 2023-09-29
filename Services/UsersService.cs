@@ -11,16 +11,17 @@ namespace Services
     {
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly JwtService _jwtService;
+        //private readonly JwtService _jwtService;
 
         public UsersService(
             RoleManager<IdentityRole> roleManager,
-            SignInManager<IdentityUser> signInManager,
-            JwtService jwtService)
+            SignInManager<IdentityUser> signInManager
+            //JwtService jwtService
+            )
         {
             _roleManager = roleManager;
             _signInManager = signInManager;
-            _jwtService = jwtService;
+            //_jwtService = jwtService;
         }
 
         public Task<bool> Delete(string id)
@@ -28,21 +29,21 @@ namespace Services
             throw new NotImplementedException();
         }
 
-        public List<UserViewModel> GetAll()
+        public async Task<List<UserViewModel>> GetAll()
         {
-            return _signInManager.UserManager
-                .Users
-                .Select<IdentityUser, UserViewModel>(u => MapToViewModel(u).Result)
-                .ToList();
+            List<UserViewModel> users = new List<UserViewModel>();
+            foreach (var identityUser in _signInManager.UserManager.Users.ToList())
+            {
+                users.Add(MapToViewModel(identityUser, await GetRolesForIdentityUser(identityUser)));
+            }
+
+            return users;
         }
 
         public async Task<UserViewModel> GetById(string id)
         {
             IdentityUser identityUser = await GetIdentityUser(id);
-
-            IList<string> roles = await _signInManager.UserManager.GetRolesAsync(identityUser);
-
-            return await MapToViewModel(identityUser);
+            return MapToViewModel(identityUser, await GetRolesForIdentityUser(identityUser));
         }
 
         private async Task<IdentityUser> GetIdentityUser(string id)
@@ -52,7 +53,15 @@ namespace Services
 
         public async Task<UserViewModel> GetUserByEmail(string email)
         {
-            return await MapToViewModel(await _signInManager.UserManager.FindByEmailAsync(email));
+            if (string.IsNullOrEmpty(email))
+            {
+                // Handle the case where the email is null or empty
+                // You might want to throw an exception or return an appropriate response
+                throw new Exception($"User with email {email} does not exist!");
+            }
+
+            IdentityUser identityUser = await _signInManager.UserManager.FindByEmailAsync(email);
+            return MapToViewModel(identityUser, await GetRolesForIdentityUser(identityUser));
         }
 
         public async Task<UserViewModel> GetUserByUsername(string username)
@@ -61,8 +70,11 @@ namespace Services
             {
                 // Handle the case where the username is null or empty
                 // You might want to throw an exception or return an appropriate response
+                throw new Exception($"User with email {username} does not exist!");
             }
-            return await MapToViewModel(await _signInManager.UserManager.FindByNameAsync(username));
+
+            IdentityUser identityUser = await _signInManager.UserManager.FindByNameAsync(username);
+            return MapToViewModel(identityUser, await GetRolesForIdentityUser(identityUser));
         }
 
         public async Task<bool> Insert(UserViewModel user)
@@ -125,22 +137,21 @@ namespace Services
             return true;
         }
 
-        private async Task<List<UserRole>> GetRolesForIdentityUser(IdentityUser user)
+        private async Task<List<UserRole>> GetRolesForIdentityUser(IdentityUser identityUser)
         {
-            List<UserRole> roles = new List<UserRole>();
-            foreach (UserRole role in Enum.GetValues(typeof(UserRole)))
-            {
-                if (await _signInManager.UserManager.IsInRoleAsync(user, role.ToString()))
-                {
-                    roles.Add(role);
-                }
+            List<UserRole> userRoles = new List<UserRole>();
+            IList<string> roles = await _signInManager.UserManager.GetRolesAsync(identityUser);
 
+            foreach (UserRole userRole in Enum.GetValues(typeof(UserRole)))
+            {
+                if (roles.Any(r => r.Equals(userRole.ToString(), StringComparison.InvariantCultureIgnoreCase)))
+                    userRoles.Add(userRole);
             }
 
-            return roles;
+            return userRoles;
         }
 
-        private async Task<UserViewModel> MapToViewModel(IdentityUser u)
+        private static UserViewModel MapToViewModel(IdentityUser u, List<UserRole> roles)
         {
             if (u == null)
                 return null;
@@ -153,7 +164,7 @@ namespace Services
                 Email = u.Email,
                 Password = String.Empty,
                 UserName = u.UserName,
-                Roles = await GetRolesForIdentityUser(u),
+                Roles = roles,
             };
 
             return userViewModel;
@@ -186,7 +197,7 @@ namespace Services
             await _signInManager.SignInAsync(identityUser, false);
 
             // convert to viewmodel
-            return await MapToViewModel(identityUser);
+            return MapToViewModel(identityUser, await GetRolesForIdentityUser(identityUser));
         }
 
         public async Task Logout()
@@ -196,7 +207,8 @@ namespace Services
 
         public async Task<AuthenticationResponse> CreateToken(string userName)
         {
-            return _jwtService.CreateToken(await _signInManager.UserManager.FindByNameAsync(userName));
+            throw new NotImplementedException();
+            //return _jwtService.CreateToken(await _signInManager.UserManager.FindByNameAsync(userName));
         }
     }
 }

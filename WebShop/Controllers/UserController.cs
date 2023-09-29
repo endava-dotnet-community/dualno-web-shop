@@ -22,16 +22,17 @@ namespace WebShop.Controllers
 
         [Authorize]
         [HttpGet("users")]
-        public List<UserViewModel> GetAllUsers()
+        public async Task<List<UserViewModel>> GetAllUsers()
         {
             if(!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
                 throw new NotAuthorizedException();
             }
 
-            return UsersService.GetAll();
+            return await UsersService.GetAll();
         }
 
+        [Authorize(Roles = "Administrator")]
         [HttpPost("user/create")]
         public async Task<IActionResult> Create(UserViewModel userViewModel)
         {
@@ -64,26 +65,26 @@ namespace WebShop.Controllers
             return Ok();
         }
 
-        // POST: api/Users/BearerToken
-        [HttpPost("BearerToken")]
-        public async Task<ActionResult<AuthenticationResponse>> CreateBearerToken(AuthenticationRequest request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest("Bad credentials");
-            }
+        //// POST: api/Users/BearerToken
+        //[HttpPost("BearerToken")]
+        //public async Task<ActionResult<AuthenticationResponse>> CreateBearerToken(AuthenticationRequest request)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        return BadRequest("Bad credentials");
+        //    }
 
-            UserViewModel user = await UsersService.Login(request.UserName, request.Password);
+        //    UserViewModel user = await UsersService.Login(request.UserName, request.Password);
 
-            if (user == null)
-            {
-                return BadRequest("Bad credentials");
-            }
+        //    if (user == null)
+        //    {
+        //        return BadRequest("Bad credentials");
+        //    }
 
-            var token = await UsersService.CreateToken(user.UserName);
+        //    var token = await UsersService.CreateToken(user.UserName);
 
-            return Ok(token);
-        }
+        //    return Ok(token);
+        //}
 
     }
 }

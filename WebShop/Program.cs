@@ -53,7 +53,7 @@ namespace WebShop
             });
 
             builder.Services
-                .AddIdentityCore<IdentityUser>(options =>
+                .AddIdentity<IdentityUser, IdentityRole>(options =>
                 {
                     options.SignIn.RequireConfirmedAccount = false;
                     options.User.RequireUniqueEmail = true;
@@ -63,7 +63,6 @@ namespace WebShop
                     options.Password.RequireUppercase = false;
                     options.Password.RequireLowercase = false;
                 })
-                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<WebshopContext>();
 
             builder.Services.AddHttpContextAccessor();
@@ -87,58 +86,58 @@ namespace WebShop
             builder.Services.AddScoped<UserManager<IdentityUser>>();
             builder.Services.AddScoped<SignInManager<IdentityUser>>();
             builder.Services.AddScoped<RoleManager<IdentityRole>>();
-            builder.Services.AddScoped<JwtService>();
+            //builder.Services.AddScoped<JwtService>();
 
             builder.Services.AddSingleton<IValidator<ProductViewModel>, ProductViewModelValidator>();
             builder.Services.AddSingleton<IValidator<CategoryViewModel>, CategoryViewModelValidator>();
 
-            // add jwt authentication
-            builder.Services
-                .AddAuthentication(x =>
-                {
-                    x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(IdentityConstants.ApplicationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidAudience = builder.Configuration["Jwt:Audience"],
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
-                        )
-                    };
-                });
+            //// add jwt authentication
+            //builder.Services
+            //    .AddAuthentication(x =>
+            //    {
+            //        x.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    })
+            //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(IdentityConstants.ApplicationScheme)
+            //    .AddJwtBearer(options =>
+            //    {
+            //        options.TokenValidationParameters = new TokenValidationParameters()
+            //        {
+            //            ValidateIssuer = true,
+            //            ValidateAudience = true,
+            //            ValidateLifetime = true,
+            //            ValidateIssuerSigningKey = true,
+            //            ValidAudience = builder.Configuration["Jwt:Audience"],
+            //            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            //            IssuerSigningKey = new SymmetricSecurityKey(
+            //                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+            //            )
+            //        };
+            //    });
 
             builder.Services.AddSwaggerGen(c =>
             {
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
-                {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
-                });
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
-                    {
-                        new OpenApiSecurityScheme {
-                            Reference = new OpenApiReference {
-                                Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer"
-                            }
-                        },
-                        new string[] {}
-                    }
-                });
+                //c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                //{
+                //    Name = "Authorization",
+                //    Type = SecuritySchemeType.ApiKey,
+                //    Scheme = "Bearer",
+                //    BearerFormat = "JWT",
+                //    In = ParameterLocation.Header,
+                //    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+                //});
+                //c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                //    {
+                //        new OpenApiSecurityScheme {
+                //            Reference = new OpenApiReference {
+                //                Type = ReferenceType.SecurityScheme,
+                //                    Id = "Bearer"
+                //            }
+                //        },
+                //        new string[] {}
+                //    }
+                //});
             });
 
 

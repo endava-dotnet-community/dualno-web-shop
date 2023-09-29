@@ -5,7 +5,7 @@ namespace Core.Abstractions.Services
 {
     public interface IUsersService
     {
-        List<UserViewModel> GetAll();
+        Task<List<UserViewModel>> GetAll();
         Task<UserViewModel> GetById(string id);
         Task<bool> Insert(UserViewModel user);
         Task<bool> Update(string userId, UserViewModel user);
