@@ -3,6 +3,7 @@ using Domain;
 using Models.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ namespace DatabaseEF.Repositories
     public class ProductRepository : IProductRepository
     {
         readonly WebshopContext _context;
-        public ProductRepository(WebshopContext dbContext) 
-        { 
+        public ProductRepository(WebshopContext dbContext)
+        {
             _context = dbContext;
         }
 
@@ -35,6 +36,7 @@ namespace DatabaseEF.Repositories
         {
             return _context
                 .Products
+                .AsNoTracking()
                 .Select(e => MapFromEntity(e))
                 .ToList();
         }
@@ -53,14 +55,15 @@ namespace DatabaseEF.Repositories
             ProductEntity entity = MapToEntity(product);
             await _context.Products.AddAsync(entity);
             await _context.SaveChangesAsync();
-            
+
             return true;
         }
 
         public async Task<List<Product>> SearchByKeyWordAsync(string keyword)
         {
-            return  _context
+            return _context
                 .Products
+                .AsNoTracking()
                 .ToList()
                 .Where(p =>
                     p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||

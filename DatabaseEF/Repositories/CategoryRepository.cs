@@ -19,6 +19,7 @@ namespace DatabaseEF.Repositories
         {
             return _context
                 .Categories
+                .AsNoTracking()
                 .Select(c => MapFromEntity(c))
                 .ToList();
         }
