@@ -21,7 +21,15 @@ namespace WebShop.Controllers
         [HttpGet("products")]
         public async Task<List<ProductViewModel>> GetAllProducts()
         {
-            return await _productService.GetAllProductsAsync();
+            try
+            {
+                var products = await _productService.GetAllProductsAsync();
+                return products;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         [HttpPost("products")]
