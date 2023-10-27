@@ -82,5 +82,29 @@ namespace WebShopUnitTests
             Assert.IsNull(result.Result);
 
         }
+
+        [TestMethod]
+        public void InsertTestMethod()
+        {
+
+            var productServiceMock = new Mock<IProductsService>();
+            productServiceMock
+                .Setup(service => service.GetAllProductsAsync())
+                .Throws(new Exception());
+
+            var userServiceMock = new Mock<IUsersService>();
+
+
+            var controller = new ProductsController(productServiceMock.Object, userServiceMock.Object);
+
+            //Act
+
+            var result = controller.GetAllProducts();
+
+            Assert.IsNotNull(result);
+            Assert.IsInstanceOfType(result, typeof(Task));
+            Assert.IsNull(result.Result);
+
+        }
     }
 }
