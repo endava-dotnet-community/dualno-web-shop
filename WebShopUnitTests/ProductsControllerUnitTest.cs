@@ -99,6 +99,7 @@ namespace WebShopUnitTests
                 Name = "Sava hleb",
                 Price = 57
             };
+
             var productServiceMock = new Mock<IProductsService>();
             productServiceMock
                 .Setup(service => service.InsertAsync(productViewModel))
