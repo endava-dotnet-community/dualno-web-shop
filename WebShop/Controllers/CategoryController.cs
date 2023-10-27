@@ -25,14 +25,14 @@ namespace WebShop.Controllers
         }
 
         [HttpPost("category")]
-        public async Task<IActionResult> Insert([FromBody] CategoryViewModel productModel)
+        public async Task<IActionResult> Insert([FromBody] CategoryViewModel categoryViewModel)
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
                 throw new NotAuthorizedException();
             }
 
-            await _categoryService.InsertAsync(productModel);
+            await _categoryService.InsertAsync(categoryViewModel);
             return Ok();
         }
 
@@ -42,32 +42,32 @@ namespace WebShop.Controllers
             return await _categoryService.SearchByKeyWordAsync(keyword);
         }
 
-        [HttpGet("category/{productId}")]
-        public async Task<CategoryViewModel> GetById(int productId)
+        [HttpGet("category/{categoryId}")]
+        public async Task<CategoryViewModel> GetById(int categoryId)
         {
-            return await _categoryService.GetByIdAsync(productId);
+            return await _categoryService.GetByIdAsync(categoryId);
         }
 
-        [HttpDelete("category/{productId}")]
-        public async Task<bool> DeleteById(int productId)
+        [HttpDelete("category/{categoryId}")]
+        public async Task<bool> DeleteById(int categoryId)
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
                 throw new NotAuthorizedException();
             }
 
-            return await _categoryService.DeleteAsync(productId);
+            return await _categoryService.DeleteAsync(categoryId);
         }
 
         [HttpPut("category")]
-        public async Task<bool> UpdateCategory(int productId, CategoryViewModel productViewModel)
+        public async Task<bool> UpdateCategory(int productId, CategoryViewModel categoryViewModel)
         {
             if (!CurrentUser.Roles.Contains(UserRole.Administrator))
             {
                 throw new NotAuthorizedException();
             }
 
-            return await _categoryService.UpdateAsync(productId, productViewModel);
+            return await _categoryService.UpdateAsync(productId, categoryViewModel);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace WebShop.Controllers
     public class WebShopBaseController : ControllerBase
     {
         public readonly IUsersService UsersService;
-
+        public string IdentityName { get; set; }
         public WebShopBaseController(IUsersService usersService)
         {
             UsersService = usersService;
@@ -20,9 +20,9 @@ namespace WebShop.Controllers
             {
                 UserViewModel userViewModel = null;
 
-                if (!string.IsNullOrEmpty(this.Request.HttpContext.User.Identity.Name))
+                if (!string.IsNullOrEmpty(IdentityName ?? this.Request.HttpContext.User.Identity.Name))
                 {
-                    userViewModel = UsersService.GetUserByUsername(this.Request.HttpContext.User.Identity.Name).Result;
+                    userViewModel = UsersService.GetUserByUsername(IdentityName ?? this.Request.HttpContext.User.Identity.Name).Result;
                 }
 
                 if (userViewModel == null)
