@@ -1,4 +1,5 @@
 using Core.Abstractions.Services;
+using Domain;
 using Models.ViewModels;
 using Moq;
 using WebShop.Controllers;
@@ -86,24 +87,34 @@ namespace WebShopUnitTests
         [TestMethod]
         public void InsertTestMethod()
         {
-
+            var productViewModel = new ProductViewModel()
+            {
+                Category = new Category()
+                {
+                    Id = 1,
+                    Name = "Prehrambeni proizvodi"
+                },
+                Description = "Hleb",
+                Id = 1,
+                Name = "Sava hleb",
+                Price = 57
+            };
             var productServiceMock = new Mock<IProductsService>();
             productServiceMock
-                .Setup(service => service.GetAllProductsAsync())
-                .Throws(new Exception());
+                .Setup(service => service.InsertAsync(productViewModel))
+                .Returns(Task.CompletedTask);
 
             var userServiceMock = new Mock<IUsersService>();
 
-
             var controller = new ProductsController(productServiceMock.Object, userServiceMock.Object);
 
+            
             //Act
 
-            var result = controller.GetAllProducts();
+            var result = controller.Insert(productViewModel); 
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(Task));
-            Assert.IsNull(result.Result);
 
         }
     }
