@@ -68,7 +68,7 @@ namespace ServicesUnitTests
 
             Assert.IsNotNull(result?.Result);
             Assert.IsInstanceOfType(result, typeof(Task<CategoryViewModel>));
-            Assert.AreEqual(1, result.Id);
+            Assert.AreEqual(1, result?.Result.Id);
 
             var result2 = service.GetByIdAsync(0);
 
@@ -131,8 +131,6 @@ namespace ServicesUnitTests
             var repostitoryMock = new Mock<ICategoryRepository>();
 
             var viewModelValidatorMock = new CategoryViewModelValidator();
-
-            Action insertCategoryAction = () => InsertCategory(category);
 
             repostitoryMock
                 .Setup(repos => repos.InsertAsync(It.IsAny<Category>()))
