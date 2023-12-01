@@ -3,6 +3,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Data.Common;
+using System.Data.Entity;
 using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEFUnitTests
@@ -16,8 +17,10 @@ namespace DatabaseEFUnitTests
                 .ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning))
                 .Options;
 
-            return new WebshopContext(_contextOptions);
-        }
+            var _context = new WebshopContext(_contextOptions);
+            _context.Database.EnsureDeleted();
 
+            return _context;
+        }
     }
 }
