@@ -8,18 +8,8 @@ using WebShop.DatabaseEF.Entities;
 namespace DatabaseEFUnitTests
 {
     [TestClass]
-    public class CategoryRepositoryUnitTests
+    public class CategoryRepositoryUnitTests : DatabaseUnitTests
     {
-        private WebshopContext CreateDbContext()
-        {
-            var _contextOptions = new DbContextOptionsBuilder<WebshopContext>()
-                .UseInMemoryDatabase("WebShopUnitTests")
-                .ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning))
-                .Options;
-
-            return new WebshopContext(_contextOptions);
-        }
-
         [TestMethod]
         public async Task GetByIdAsyncTestMethod()
         {
