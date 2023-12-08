@@ -1,5 +1,6 @@
 ﻿using Core.Abstractions.Repositories;
 using DatabaseEF.Entities;
+using DatabaseEF.Migrations;
 using Domain;
 using WebShop.DatabaseEF.Entities;
 
@@ -12,7 +13,7 @@ namespace DatabaseEF.Repositories
         {
             _context = dbContext;
         }
-        public async Task<bool> DeleteShoppingCartAsync(long cartId) // ja
+        public async Task<bool> DeleteShoppingCartAsync(long cartId)
         {
             ShoppingCartEntity entity = await _context.Carts.FindAsync(cartId);
 
@@ -27,7 +28,15 @@ namespace DatabaseEF.Repositories
 
         public async Task<bool> DeleteShoppingCartItemAsync(long cartItemId) // david
         {
-            throw new NotImplementedException();
+            ShoppingCartItemEntity entity = await _context.CartItems.FindAsync(cartItemId);
+
+            if (entity == null)
+                return false;
+
+            _context.CartItems.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<List<ShoppingCart>> GetAllShoppingCartsAsync()// lara
