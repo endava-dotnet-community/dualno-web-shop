@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Domain;
 using DatabaseEF.Entities;
 
 namespace WebShop.DatabaseEF.Entities;
@@ -21,6 +22,8 @@ public partial class WebshopContext : IdentityDbContext<IdentityUser>
     public virtual DbSet<CategoryEntity> Categories { get; set; }
 
     public virtual DbSet<ProductEntity> Products { get; set; }
+    public virtual DbSet<ShoppingCartEntity> Carts{ get; set; }
+    public virtual DbSet<ShoppingCartItemEntity> CartItems { get; set; }
 
     public virtual DbSet<ShoppingCartItemEntity> ShoppingCartItems { get; set; }
 

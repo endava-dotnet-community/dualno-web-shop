@@ -1,8 +1,6 @@
 ﻿using Core.Abstractions.Repositories;
 using DatabaseEF.Entities;
 using Domain;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEF.Repositories
 {
@@ -13,17 +11,25 @@ namespace DatabaseEF.Repositories
         {
             _context = dbContext;
         }
-        public Task<bool> DeleteShoppingCartAsync(long cartId)
+        public async Task<bool> DeleteShoppingCartAsync(long cartId) // ja
+        {
+            ShoppingCartEntity entity = await _context.Carts.FindAsync(cartId);
+
+            if (entity == null)
+                return false;
+
+            _context.Carts.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> DeleteShoppingCartItemAsync(long cartItemId) // david
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteShoppingCartItemAsync(long cartItemId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<ShoppingCart>> GetAllShoppingCartsAsync()
+        public async Task<List<ShoppingCart>> GetAllShoppingCartsAsync()// lara
         {
             throw new NotImplementedException();
         }
@@ -34,22 +40,22 @@ namespace DatabaseEF.Repositories
             return MapFromEntity(entity);
         }
 
-        public Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart)
+        public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart) // mladen
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem)
+        public async Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem) // ilija
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateAccessedAtAsync(long cartId, DateTime accessedAt)
+        public async Task<bool> UpdateAccessedAtAsync(long cartId, DateTime accessedAt) // petar
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
+        public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity) // nikola
         {
             throw new NotImplementedException();
         }
