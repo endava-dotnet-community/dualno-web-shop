@@ -1,48 +1,74 @@
 ﻿using Core.Abstractions.Repositories;
+using DatabaseEF.Entities;
 using Domain;
+using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEF.Repositories
 {
     public class ShoppingCartRepository : IShoppingCartRepository
     {
-        public Task<bool> DeleteShoppingCartAsync(long cartId)
+        readonly WebshopContext _context;
+        public ShoppingCartRepository(WebshopContext dbContext)
+        {
+            _context = dbContext; 
+        }
+        public async Task<bool> DeleteShoppingCartAsync(long cartId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> DeleteShoppingCartItemAsync(long cartItemId)
+        public async Task<bool> DeleteShoppingCartItemAsync(long cartItemId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<ShoppingCart>> GetAllShoppingCartsAsync()
+        public async Task<List<ShoppingCart>> GetAllShoppingCartsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<ShoppingCart> GetBySessionIdAsync(string sessionId)
+        public async Task<ShoppingCart> GetBySessionIdAsync(string sessionId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart)
+        public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart)//-------------------------------
+        {
+            if (shoppingCart == null)
+                return false;
+
+            ShoppingCartEntity entity = MapToEntity(shoppingCart);
+            await _context.Cart.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem)
+        public async Task<bool> UpdateAccessedAtAsync(long cartId, DateTime accessedAt)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateAccessedAtAsync(long cartId, DateTime accessedAt)
+        public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
         {
             throw new NotImplementedException();
         }
-
-        public Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
+        private static ShoppingCartEntity MapToEntity(ShoppingCart p)
         {
-            throw new NotImplementedException();
+            if (p == null)
+                return null;
+
+            return new ShoppingCartEntity
+            {
+                Id = p.Id,
+                AccessedAt = p.AccessedAt,
+                SessionId = p.SessionId,
+            };
         }
     }
 }
