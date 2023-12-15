@@ -13,11 +13,11 @@ namespace DatabaseEF.Repositories
         {
             _context = dbContext;
         }
-        public async Task<bool> DeleteShoppingCartAsync(long cartId)
+        public async Task<bool> DeleteShoppingCartAsync(long cartId) { 
             return true;
         }
 
-        public async Task<bool> DeleteShoppingCartItemAsync(long cartItemId) // david
+        public async Task<bool> DeleteShoppingCartItemAsync(long cartItemId) 
         {
             ShoppingCartItemEntity entity = await _context.CartItems.FindAsync(cartItemId);
 
@@ -30,32 +30,32 @@ namespace DatabaseEF.Repositories
             return true;
         }
 
-        public async Task<List<ShoppingCart>> GetAllShoppingCartsAsync()// lara
+        public async Task<List<ShoppingCart>> GetAllShoppingCartsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public async Task<ShoppingCart> GetBySessionIdAsync(string sessionId)// lara
+        public async Task<ShoppingCart> GetBySessionIdAsync(string sessionId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart) // mladen
+        public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem) // ilija
+        public async Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<bool> UpdateAccessedAtAsync(long cartId, DateTime accessedAt) // petar
+        public async Task<bool> UpdateAccessedAtAsync(long cartId, DateTime accessedAt)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity) // nikola
+        public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
         {
             throw new NotImplementedException();
         }
