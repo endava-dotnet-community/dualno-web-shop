@@ -1,6 +1,7 @@
 ﻿using Core.Abstractions.Repositories;
 using DatabaseEF.Entities;
 using Domain;
+using System.Data.Entity;
 using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEF.Repositories
@@ -32,7 +33,11 @@ namespace DatabaseEF.Repositories
 
         public async Task<List<ShoppingCart>> GetAllShoppingCartsAsync()
         {
-            throw new NotImplementedException();
+            return _context
+                .Carts
+                .AsNoTracking()
+                .Select(e => MapFromEntity(e))
+                .ToList();
         }
 
         public async Task<ShoppingCart> GetBySessionIdAsync(string sessionId)
