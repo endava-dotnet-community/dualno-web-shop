@@ -32,7 +32,7 @@ namespace DatabaseEF.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart)//-------------------------------
+        public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart)
         {
             if (shoppingCart == null)
                 return false;
