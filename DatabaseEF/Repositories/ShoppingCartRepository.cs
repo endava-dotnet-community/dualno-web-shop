@@ -52,13 +52,20 @@ namespace DatabaseEF.Repositories
 
         public async Task<ShoppingCart> GetBySessionIdAsync(string sessionId)
         {
-            ShoppingCartEntity entity = (await _context.ShoppingCarts.FindAsync(sessionId));
+            ShoppingCartEntity entity = (await _context.Carts.FindAsync(sessionId));
             return MapFromEntity(entity);
         }
 
-        public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart) 
+        public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart)
         {
-            throw new NotImplementedException();
+            if (shoppingCart == null)
+                return false;
+
+            ShoppingCartEntity entity = MapToEntity(shoppingCart);
+            await _context.Carts.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem) 
@@ -66,7 +73,7 @@ namespace DatabaseEF.Repositories
             if (shoppingCartItem == null)
                 return false;
 
-            ShoppingCartItemEntity entity = MapToEntity(shoppingCartItem);
+            ShoppingCartItemEntity entity = MapToEntityItem(shoppingCartItem);
             await _context.CartItems.AddAsync(entity);
             await _context.SaveChangesAsync();
 
@@ -80,8 +87,14 @@ namespace DatabaseEF.Repositories
 
         public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
         {
-            throw new NotImplementedException();
+            ShoppingCartItemEntity entity = await _context.CartItems.FindAsync(cartItemId);
+            if (entity == null || quantity < 1)
+                return false;
+            entity.Quantity = quantity;
+            await _context.SaveChangesAsync();
+            return true;
         }
+
         private static ShoppingCartItem MapFromEntityItems (ShoppingCartItemEntity p)
         {
             if (p == null)
@@ -109,7 +122,7 @@ namespace DatabaseEF.Repositories
             };
         }
 
-        private static ShoppingCartItemEntity MapToEntity(ShoppingCartItem p)
+        private static ShoppingCartItemEntity MapToEntityItem(ShoppingCartItem p)
         {
             if (p == null)
                 return null;
@@ -121,6 +134,19 @@ namespace DatabaseEF.Repositories
                     Id = p.ProductId
                 },
                 Quantity = p.Quantity
+            };
+        }
+
+        private static ShoppingCartEntity MapToEntity(ShoppingCart p)
+        {
+            if (p == null)
+                return null;
+
+            //TODO
+            return new ShoppingCartEntity
+            {
+                Id = p.Id,
+
             };
         }
 
