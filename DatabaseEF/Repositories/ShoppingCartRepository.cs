@@ -13,7 +13,7 @@ namespace DatabaseEF.Repositories
         {
             _context = dbContext;
         }
-        public async Task<bool> DeleteShoppingCartAsync(long cartId) 
+        public async Task<bool> DeleteShoppingCartAsync(long cartId)
         {
             ShoppingCartEntity entity = await _context.Carts.FindAsync(cartId);
 
@@ -40,36 +40,10 @@ namespace DatabaseEF.Repositories
                 .ToList();
         }
 
-        private static ShoppingCartItem MapFromEntity(ShoppingCartItemEntity sci)
-        {
-            if (sci == null)
-                return null;
-
-            return new ShoppingCartItem
-            {
-                Id = sci.Id,
-                ProductId = sci.Product.Id,
-                Quantity = sci.Quantity
-            };
-        }
-
-        private static ShoppingCart MapFromEntity(ShoppingCartEntity sc)
-        {
-            if (sc == null)
-                return null;
-
-            return new ShoppingCart
-            {
-                Id = sc.Id,
-                AccessedAt = sc.AccessedAt,
-                SessionId = sc.SessionId,
-                Items = sc.Items.Select(i => MapFromEntity(i)).ToList()
-            };
-        }
-
         public async Task<ShoppingCart> GetBySessionIdAsync(string sessionId)
         {
-            throw new NotImplementedException();
+            ShoppingCartEntity entity = (await _context.ShoppingCarts.FindAsync(sessionId));
+            return MapFromEntity(entity);
         }
 
         public async Task<bool> InsertShoppingCartAsync(ShoppingCart shoppingCart) 
@@ -79,7 +53,14 @@ namespace DatabaseEF.Repositories
 
         public async Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem) 
         {
-            throw new NotImplementedException();
+            if (shoppingCartItem == null)
+                return false;
+
+            ShoppingCartItemEntity entity = MapToEntity(shoppingCartItem);
+            await _context.CartItems.AddAsync(entity);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
         public async Task<bool> UpdateAccessedAtAsync(long cartId, DateTime accessedAt) 
@@ -87,9 +68,51 @@ namespace DatabaseEF.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity) 
+        public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
         {
             throw new NotImplementedException();
         }
+        private static ShoppingCartItem MapFromEntityItems (ShoppingCartItemEntity p)
+        {
+            if (p == null)
+                return null;
+            return new ShoppingCartItem
+            {
+                Id = p.Id,
+                ProductId = p.Product.Id,
+                Quantity = p.Quantity,
+            };
+        }
+        private static ShoppingCart MapFromEntity(ShoppingCartEntity p)
+        {
+            if (p == null)
+                return null;
+
+            return new ShoppingCart
+            {
+
+                Id = p.Id,
+                AccessedAt = p.AccessedAt,
+                SessionId = p.SessionId,
+                Items = p.Items.Select(i => MapFromEntityItems(i)).ToList(),
+
+            };
+        }
+
+        private static ShoppingCartItemEntity MapToEntity(ShoppingCartItem p)
+        {
+            if (p == null)
+                return null;
+            return new ShoppingCartItemEntity
+            {
+                Id = p.Id,
+                Product = new ProductEntity
+                {
+                    Id = p.ProductId
+                },
+                Quantity = p.Quantity
+            };
+        }
+
     }
 }
