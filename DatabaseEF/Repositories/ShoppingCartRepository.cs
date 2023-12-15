@@ -14,15 +14,6 @@ namespace DatabaseEF.Repositories
             _context = dbContext;
         }
         public async Task<bool> DeleteShoppingCartAsync(long cartId)
-        {
-            ShoppingCartEntity entity = await _context.Carts.FindAsync(cartId);
-
-            if (entity == null)
-                return false;
-
-            _context.Carts.Remove(entity);
-            await _context.SaveChangesAsync();
-
             return true;
         }
 
