@@ -56,7 +56,12 @@ namespace DatabaseEF.Repositories
 
         public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
         {
-            throw new NotImplementedException();
+            ShoppingCartItemEntity entity = await _context.Cart.FindAsync(cartItemId);
+            if (entity == null || quantity < 1)
+                return false;
+            entity.Quantity = quantity;
+            await _context.SaveChangesAsync();
+            return true;
         }
         private static ShoppingCartEntity MapToEntity(ShoppingCart p)
         {
