@@ -22,6 +22,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Domain;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using WebShop.Authentication;
 
 namespace WebShop
 {
@@ -52,6 +53,10 @@ namespace WebShop
                 x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            builder.Services.Configure<AuthOptions>(
+                builder.Configuration.GetSection(AuthOptions.Position)
+            );
+            
             builder.Services
                 .AddIdentity<IdentityUser, IdentityRole>(options =>
                 {
@@ -153,6 +158,8 @@ namespace WebShop
 
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+            app.UseMiddleware<ApiKeyAuthMiddleware>();
 
             app.UseSession();
 
