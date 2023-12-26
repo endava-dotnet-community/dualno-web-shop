@@ -34,8 +34,8 @@ namespace WebShop
             builder.Configuration
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"}.json", optional: true)
-                .AddJsonFile("appsettings.my.json", optional: true, reloadOnChange: true);
-
+                .AddJsonFile("appsettings.my.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
 
             builder.Services.AddDistributedMemoryCache();
             builder.Services.AddSession();
