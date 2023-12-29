@@ -127,10 +127,7 @@ namespace DatabaseEF.Repositories
             return new ShoppingCartItemEntity
             {
                 Id = p.Id,
-                Product = new ProductEntity
-                {
-                    Id = p.ProductId
-                },
+                ProductId = p.ProductId,
                 Quantity = p.Quantity,
                 CartId = p.CartId
             };
@@ -160,7 +157,7 @@ namespace DatabaseEF.Repositories
                 Id = p.Id,
                 SessionId = p.SessionId,
                 AccessedAt = p.AccessedAt,
-                Items = p.Items.Select(p => MapToEntityItem(p)).ToList()
+                Items = p.Items == null ? new() : p.Items.Select(p => MapToEntityItem(p)).ToList()
             };
         }
     }
