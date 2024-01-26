@@ -1,10 +1,6 @@
+using DatabaseEF.Entities;
 using DatabaseEF.Repositories;
 using Domain;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using System.Data.Common;
-using System.Runtime.CompilerServices;
 using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEFUnitTests
@@ -12,6 +8,7 @@ namespace DatabaseEFUnitTests
     [TestClass]
     public class ShoppingCartRepositoryUnitTests : DatabaseUnitTests
     {
+        readonly WebshopContext _context;
         private async Task CreateShoppingCart(ShoppingCartRepository repository, string sessionId, DateTime accessedAt)
         {
             await repository.InsertShoppingCartAsync(
@@ -154,5 +151,27 @@ namespace DatabaseEFUnitTests
             throw new NotImplementedException();
         }
 
+        [TestMethod]
+        public async Task UpdateQuantityAsyncForNegativeQuanityTestMethod()
+        {
+            var sessionId = Guid.NewGuid().ToString();
+            var accessedAt = DateTime.UtcNow;
+
+            using var context = CreateDbContext();
+            await CreateTestData(context, sessionId, accessedAt);
+
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.UpdateQuantityAsync(1, -1);
+            
+            Assert.AreEqual(result, true);
+
+            var shoppingCart = await repository.GetBySessionIdAsync(sessionId);
+
+            var item = shoppingCart.Items.Find(i => i.Id == 1);
+
+            Assert.AreEqual(30, item.Quantity);
+            
+        }
     }
 }
