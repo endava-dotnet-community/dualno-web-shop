@@ -108,42 +108,49 @@ namespace DatabaseEFUnitTests
         [TestMethod]
         public async Task<List<ShoppingCart>> GetAllShoppingCartsAsyncTestMethod()
         {
+            // veljko
             throw new NotImplementedException();
         }
 
         [TestMethod]
         public async Task<bool> InsertShoppingCartAsyncTestMethod(ShoppingCart shoppingCart)
         {
+            // lazar
             throw new NotImplementedException();
         }
 
         [TestMethod]
         public async Task<bool> UpdateAccessedAtAsyncTestMethod(long cartId, DateTime accessedAt)
         {
+            // lara
             throw new NotImplementedException();
         }
 
         [TestMethod]
         public async Task<bool> DeleteShoppingCartAsyncTestMethod(long cartId)
         {
+            // fica
             throw new NotImplementedException();
         }
 
         [TestMethod]
         public async Task<bool> InsertShoppingCartItemAsyncTestMethod(ShoppingCartItem shoppingCartItem)
         {
+            // mladen
             throw new NotImplementedException();
         }
 
         [TestMethod]
         public async Task<bool> UpdateQuantityAsyncTestMethod(long cartItemId, int quantity)
         {
+            // mihajlo
             throw new NotImplementedException();
         }
 
         [TestMethod]
         public async Task<bool> DeleteShoppingCartItemAsyncTestMethod(long cartItemId)
         {
+            // david
             throw new NotImplementedException();
         }
 
