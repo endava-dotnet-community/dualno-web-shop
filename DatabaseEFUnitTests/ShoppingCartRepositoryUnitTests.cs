@@ -106,52 +106,192 @@ namespace DatabaseEFUnitTests
         }
 
         [TestMethod]
-        public async Task<List<ShoppingCart>> GetAllShoppingCartsAsyncTestMethod()
+        public async Task GetAllShoppingCartsAsyncTestMethod()
         {
-            // veljko
-            throw new NotImplementedException();
+            //veljko
+            var context = CreateDbContext();
+            var shoppingCartRepository = new ShoppingCartRepository(context);
+
+            await CreateShoppingCart(shoppingCartRepository, "1", DateTime.Now);
+            await CreateShoppingCart(shoppingCartRepository, "2", DateTime.Now);
+            await CreateShoppingCart(shoppingCartRepository, "3", DateTime.Now);
+
+            var result = await shoppingCartRepository.GetAllShoppingCartsAsync();
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(2, result[1].Id);
         }
 
         [TestMethod]
-        public async Task<bool> InsertShoppingCartAsyncTestMethod(ShoppingCart shoppingCart)
+        public async Task InsertShoppingCartAsyncTestMethod(/*ShoppingCart shoppingCart*/)
         {
             // lazar
-            throw new NotImplementedException();
+            var sessionId = Guid.NewGuid().ToString();
+            var accessedAt = DateTime.UtcNow;
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+            await CreateShoppingCart(repository, sessionId, accessedAt);
+            var result = await repository.GetBySessionIdAsync(sessionId);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(1, result.Id);
         }
 
         [TestMethod]
-        public async Task<bool> UpdateAccessedAtAsyncTestMethod(long cartId, DateTime accessedAt)
+        public async Task UpdateAccessedAtAsyncTestMethod()
         {
             // lara
-            throw new NotImplementedException();
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+            DateTime dt1 = new DateTime(2024, 1, 1);
+            await CreateShoppingCart(repository, "1", dt1);
+            DateTime dt2 = new DateTime(2024, 1, 2);
+            var result = repository.UpdateAccessedAtAsync(1, dt2);
+            var cart = await repository.GetBySessionIdAsync("1");
+            var dataTime = cart.AccessedAt;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(dataTime, dt2);
         }
 
         [TestMethod]
-        public async Task<bool> DeleteShoppingCartAsyncTestMethod(long cartId)
+        public async Task InsertShoppingCartNotGivenAsyncTestMethod()
         {
-            // fica
-            throw new NotImplementedException();
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+            var result = await repository.InsertShoppingCartAsync(null);
+            
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
         }
 
         [TestMethod]
-        public async Task<bool> InsertShoppingCartItemAsyncTestMethod(ShoppingCartItem shoppingCartItem)
+        public async Task DeleteShoppingCartAsyncTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+            await repository.InsertShoppingCartAsync(
+                new Domain.ShoppingCart
+                {
+                    Items = new List<ShoppingCartItem>()
+                });
+            var result = await repository.DeleteShoppingCartAsync(1);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, result);
+        }
+
+        [TestMethod]
+        public async Task DeleteShoppingCartNotFoundAsyncTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.DeleteShoppingCartAsync(1);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public async Task InsertShoppingCartItemAsyncTestMethod()
         {
             // mladen
-            throw new NotImplementedException();
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+
+            await CreateShoppingCart(repository, "1", DateTime.Now);
+            await CreateShoppingCartItems(repository, 1);
+            var shoppingCart = await repository.GetBySessionIdAsync("1");
+
+            Assert.IsNotNull(shoppingCart.Items);
+            Assert.AreEqual(shoppingCart.Items.Count, 2);
         }
 
         [TestMethod]
-        public async Task<bool> UpdateQuantityAsyncTestMethod(long cartItemId, int quantity)
+        public async Task UpdateQuantityAsyncTestMethod()
         {
-            // mihajlo
-            throw new NotImplementedException();
+            // mihajlo negativna kolicina
+            var sessionId = Guid.NewGuid().ToString();
+            var accessedAt = DateTime.UtcNow;
+            using var context = CreateDbContext();
+            await CreateTestData(context, sessionId, accessedAt);
+
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.UpdateQuantityAsync(1, 2);
+            var shoppingCart = await repository.GetAllShoppingCartsAsync();//puca zbog vincica
+            Assert.IsTrue(result);
+            Assert.AreEqual(shoppingCart[0].Items[0].Quantity, 2);
         }
 
         [TestMethod]
-        public async Task<bool> DeleteShoppingCartItemAsyncTestMethod(long cartItemId)
+        public async Task DeleteShoppingCartItemAsyncTestMethod()
         {
-            // david
-            throw new NotImplementedException();
+            //david
+            var sessionId = Guid.NewGuid().ToString();
+            var accessedAt = DateTime.UtcNow;
+            using var context = CreateDbContext();
+            await CreateTestData(context, sessionId, accessedAt);
+
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.DeleteShoppingCartItemAsync(1);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(true, result);
+
+            var result2 = await repository.GetBySessionIdAsync(sessionId);
+            Assert.AreEqual(false, result2.Items.Any(c => c.Id==1));
+
+        }
+
+        [TestMethod]
+        public async Task DeleteShoppingCartItemNotFoundAsyncTestMethod()
+        {
+            //david
+            
+            using var context = CreateDbContext();
+
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.DeleteShoppingCartItemAsync(1);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public async Task UpdateQuantityAsyncForNegativeQuanityTestMethod()
+        {
+            var sessionId = Guid.NewGuid().ToString();
+            var accessedAt = DateTime.UtcNow;
+            using var context = CreateDbContext();
+            await CreateTestData(context, sessionId, accessedAt);
+
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.UpdateQuantityAsync(1, -1);
+            Assert.AreEqual(false, result);
+
+            var shoppingCart = await repository.GetBySessionIdAsync(sessionId);
+            var item = shoppingCart.Items.Find(i => i.Id == 1);
+            Assert.AreEqual(1, item.Quantity);
+        }
+
+        [TestMethod]
+        public async Task InsertExistingItemAsyncTestMethod()
+        {
+            var sessionId = Guid.NewGuid().ToString();
+            var accessedAt = DateTime.UtcNow;
+            using var context = CreateDbContext();
+            await CreateTestData(context, sessionId, accessedAt);
+
+            var repository = new ShoppingCartRepository(context);
+            var newShoppingCartItem = new ShoppingCartItem
+            {
+                ProductId = 1,
+                CartId = 1,
+                Quantity = 1
+            };
+            var result = await repository.InsertShoppingCartItemAsync(newShoppingCartItem);
+            Assert.IsNotNull(result);
+            Assert.IsFalse(result);
         }
 
     }
