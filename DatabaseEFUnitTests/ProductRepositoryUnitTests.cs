@@ -49,6 +49,17 @@ namespace DatabaseEFUnitTests
             Assert.AreEqual(true, result);
         }
 
+        [TestMethod]
+        public async Task DeleteAsyncNotFoundTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ProductRepository(context);
+            var result = await repository.DeleteAsync(1);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
 
         [TestMethod]
         public async Task InsertAsyncTestMethod()
@@ -64,9 +75,73 @@ namespace DatabaseEFUnitTests
             };
             var result = await repository.InsertAsync(newproduct);
             var result2 = await repository.GetByIdAsync(1);
+
             Assert.IsNotNull(result);
             Assert.IsTrue(result);
             Assert.AreEqual(1, result2.Id);
+        }
+
+        [TestMethod]
+        public async Task InsertNullAsyncTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ProductRepository(context);
+            var result = await repository.InsertAsync(null);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public async Task UpdateAsyncTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ProductRepository(context);
+            var product1 = new Product
+            {
+                Id = 1,
+                CategoryId = 1,
+                Price = 1,
+                Description = null,
+                Name = null,
+            };
+            var product2 = new Product
+            {
+                CategoryId = 2,
+                Price = 2,
+                Description = null,
+                Name = "Product2"
+            };
+
+            var insertResult = await repository.InsertAsync(product1);
+
+            Assert.IsNotNull(insertResult);
+            Assert.IsTrue(insertResult);
+
+            var updateResult = await repository.UpdateAsync(1, product2);
+
+            Assert.IsNotNull(updateResult);
+            Assert.IsTrue(updateResult);
+
+            var product = await repository.GetByIdAsync(1);
+
+            Assert.IsNotNull(product);
+            Assert.AreEqual(2, product.CategoryId);
+            Assert.AreEqual(2, product.Price);
+            Assert.IsNull(product.Description);
+            Assert.AreEqual("Product2", product.Name);
+        }
+
+        [TestMethod]
+        public async Task UpdateNotFoundAsyncTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ProductRepository(context);
+
+            var result = await repository.UpdateAsync(1, new Product());
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
         }
 
         [TestMethod]
