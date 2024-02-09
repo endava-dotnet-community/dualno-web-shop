@@ -75,6 +75,10 @@ namespace DatabaseEF.Repositories
                 return false;
 
             ShoppingCartItemEntity entity = MapToEntityItem(shoppingCartItem);
+
+            if (_context.CartItems.ToList().Any(c => c.ProductId == entity.ProductId && c.CartId == entity.CartId))
+                return false;
+
             await _context.CartItems.AddAsync(entity);
             await _context.SaveChangesAsync();
 
@@ -95,6 +99,9 @@ namespace DatabaseEF.Repositories
 
         public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
         {
+            if(quantity<0)
+                return false;
+
             ShoppingCartItemEntity entity = await _context.CartItems.FindAsync(cartItemId);
             if (entity == null)
                 return false;
@@ -114,7 +121,7 @@ namespace DatabaseEF.Repositories
             {
                 Id = p.Id,
                 CartId = p.CartId,
-                ProductId = p.Product.Id,
+                ProductId = p.ProductId,
                 Quantity = p.Quantity
             };
         }

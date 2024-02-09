@@ -54,7 +54,6 @@ namespace DatabaseEFUnitTests
         public async Task GetAllCategoriesAsyncTestMethod()
         {
             using var context = CreateDbContext();
-
             var repository = new CategoryRepository(context);
 
             AllCategories.ForEach(async c => await repository.InsertAsync(c));
@@ -86,6 +85,18 @@ namespace DatabaseEFUnitTests
         }
 
         [TestMethod]
+        public async Task UpdateNotFoundAsyncTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new CategoryRepository(context);
+
+            var result = await repository.UpdateAsync(1, new Category());
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
         public async Task InsertAsyncTestMethod()
         {
             using var context = CreateDbContext();
@@ -106,6 +117,18 @@ namespace DatabaseEFUnitTests
         }
 
         [TestMethod]
+        public async Task InsertNullAsnycTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new CategoryRepository(context);
+
+            var result = await repository.InsertAsync(null);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
         public async Task DeleteAsyncTestMethod()
         {
             using var context = CreateDbContext();
@@ -118,8 +141,22 @@ namespace DatabaseEFUnitTests
                 });
 
             var result = await repository.DeleteAsync(1);
+
             Assert.IsNotNull(result);
             Assert.AreEqual(true, result);
         }
+
+        [TestMethod]
+        public async Task DeleteNotFoundAsyncTestMethod()
+        {
+            var context = CreateDbContext();
+            var repository = new CategoryRepository(context);
+
+            var result = await repository.DeleteAsync(1);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
     }
 }
