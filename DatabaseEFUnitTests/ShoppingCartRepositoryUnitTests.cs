@@ -154,6 +154,17 @@ namespace DatabaseEFUnitTests
         }
 
         [TestMethod]
+        public async Task UpdateAccessedAtNotFoundTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+            var result = await repository.UpdateAccessedAtAsync(1, DateTime.Now);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
         public async Task InsertShoppingCartNotGivenAsyncTestMethod()
         {
             using var context = CreateDbContext();
@@ -206,6 +217,17 @@ namespace DatabaseEFUnitTests
         }
 
         [TestMethod]
+        public async Task InsertNoShoppingCartItemAsyncTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.InsertShoppingCartItemAsync(null);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
         public async Task UpdateQuantityAsyncTestMethod()
         {
             // mihajlo negativna kolicina
@@ -220,6 +242,36 @@ namespace DatabaseEFUnitTests
             var shoppingCart = await repository.GetAllShoppingCartsAsync();//puca zbog vincica
             Assert.IsTrue(result);
             Assert.AreEqual(shoppingCart[0].Items[0].Quantity, 2);
+        }
+
+        [TestMethod]
+        public async Task UpdateQuantityAsyncNotFoundTestMethod()
+        {
+            using var context = CreateDbContext();
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.UpdateQuantityAsync(1, 2);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(false, result);
+        }
+
+        [TestMethod]
+        public async Task UpdateQuantityAsyncForNegativeQuanityTestMethod()
+        {
+            var sessionId = Guid.NewGuid().ToString();
+            var accessedAt = DateTime.UtcNow;
+            using var context = CreateDbContext();
+            await CreateTestData(context, sessionId, accessedAt);
+
+            var repository = new ShoppingCartRepository(context);
+
+            var result = await repository.UpdateQuantityAsync(1, -1);
+            Assert.AreEqual(false, result);
+
+            var shoppingCart = await repository.GetBySessionIdAsync(sessionId);
+            var item = shoppingCart.Items.Find(i => i.Id == 1);
+            Assert.AreEqual(1, item.Quantity);
         }
 
         [TestMethod]
@@ -257,24 +309,6 @@ namespace DatabaseEFUnitTests
         }
 
         [TestMethod]
-        public async Task UpdateQuantityAsyncForNegativeQuanityTestMethod()
-        {
-            var sessionId = Guid.NewGuid().ToString();
-            var accessedAt = DateTime.UtcNow;
-            using var context = CreateDbContext();
-            await CreateTestData(context, sessionId, accessedAt);
-
-            var repository = new ShoppingCartRepository(context);
-
-            var result = await repository.UpdateQuantityAsync(1, -1);
-            Assert.AreEqual(false, result);
-
-            var shoppingCart = await repository.GetBySessionIdAsync(sessionId);
-            var item = shoppingCart.Items.Find(i => i.Id == 1);
-            Assert.AreEqual(1, item.Quantity);
-        }
-
-        [TestMethod]
         public async Task InsertExistingItemAsyncTestMethod()
         {
             var sessionId = Guid.NewGuid().ToString();
@@ -293,6 +327,5 @@ namespace DatabaseEFUnitTests
             Assert.IsNotNull(result);
             Assert.IsFalse(result);
         }
-
     }
 }

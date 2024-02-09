@@ -36,9 +36,6 @@ namespace DatabaseEF.Repositories
 
             CategoryEntity entity = MapToEntity(category);
 
-            if(entity== null)
-                return false;
-
             await _context.Categories.AddAsync(entity);
             await _context.SaveChangesAsync();
 
