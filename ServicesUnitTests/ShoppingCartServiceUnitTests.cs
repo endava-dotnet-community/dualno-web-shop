@@ -5,6 +5,7 @@ using Models.ViewModels;
 using Services;
 using Domain;
 using Models.Validators;
+using Core.Abstractions.Services;
 
 namespace ServicesUnitTests
 {
@@ -12,25 +13,47 @@ namespace ServicesUnitTests
     public class ShoppingCartServiceUnitTests
     {
 
-        //[TestMethod]
-        //public void GetAllCategoriesAsyncTestMethod()
-        //{
-        //    var repostitoryMock = new Mock<ICategoryRepository>();
+        private async Task<ShoppingCart> GetShoppingCart()
+        {
+            var shoppingcart = new ShoppingCart()
+            {
+                Id = 1,
+                AccessedAt = new DateTime(2024, 1, 1, 0, 0, 0),
+                SessionId = "session1",
+                Items = new List<ShoppingCartItem>()
+                {
+                    new (){
+                        Id = 1,
+                        CartId = 1,
+                        ProductId = 1,
+                        Quantity = 100
+                    }
+                }
+            };
+            return shoppingcart;
+        }
 
-        //    var viewModelValidatorMock = new Mock<IValidator<CategoryViewModel>>();
+        [TestMethod]
+        public async Task GetBySessionIdAsyncTestMethod()
+        {
+            var repostitoryMock = new Mock<IShoppingCartRepository>();
 
-        //    repostitoryMock
-        //        .Setup(repos => repos.GetAllCategoriesAsync())
-        //        .Returns(GetCategories());
+            var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
+            var sessionId = "session1";
 
-        //    var service = new CategoryService(repostitoryMock.Object, viewModelValidatorMock.Object);
+            repostitoryMock
+                .Setup(repos => repos.GetBySessionIdAsync(sessionId))
+                .Returns(GetShoppingCart());
 
-        //    var result = service.GetAllCategoriesAsync();
+            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object);
 
-        //    Assert.IsNotNull(result?.Result);
-        //    Assert.AreEqual(3, result.Result.Count);
-        //    Assert.IsInstanceOfType(result, typeof(Task<List<CategoryViewModel>>));
-        //}
+
+            var result = await service.GetBySessionIdAsync(sessionId);
+
+            Assert.IsNotNull(result?.SessionId);
+            Assert.AreEqual(sessionId, result.SessionId);
+            Assert.IsInstanceOfType(result, typeof(ShoppingCartViewModel));
+        }
 
     }
 }

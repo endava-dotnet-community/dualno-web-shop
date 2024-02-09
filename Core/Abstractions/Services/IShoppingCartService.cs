@@ -1,4 +1,4 @@
-﻿using Models;
+﻿using Models.ViewModels;
 
 namespace Core.Abstractions.Services
 {

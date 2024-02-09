@@ -1,6 +1,4 @@
-﻿using Domain;
-
-namespace Models.ViewModels
+﻿namespace Models.ViewModels
 {
     public class CategoryViewModel
     {

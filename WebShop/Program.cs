@@ -83,9 +83,11 @@ namespace WebShop
 
             builder.Services.AddTransient<IProductsService, ProductsService>();
             builder.Services.AddTransient<ICategoryService, CategoryService>();
+            builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
 
             builder.Services.AddTransient<IUsersService, UsersService>();
             builder.Services.AddScoped<UserManager<IdentityUser>>();
@@ -95,6 +97,7 @@ namespace WebShop
 
             builder.Services.AddSingleton<IValidator<ProductViewModel>, ProductViewModelValidator>();
             builder.Services.AddSingleton<IValidator<CategoryViewModel>, CategoryViewModelValidator>();
+            builder.Services.AddSingleton<IValidator<ShoppingCartViewModel>, ShoppingCartViewModelValidator>();
 
             //// add jwt authentication
             //builder.Services
