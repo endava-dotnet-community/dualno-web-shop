@@ -55,5 +55,65 @@ namespace ServicesUnitTests
             Assert.IsInstanceOfType(result, typeof(ShoppingCartViewModel));
         }
 
+
+        [TestMethod]
+        public async Task<bool> DeleteShoppingCartAsyncTestMethod()//vincic
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<bool> DeleteShoppingCartItemAsyncTestMethod()//mihajlo
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<List<ShoppingCartViewModel>> GetAllShoppingCartsAsyncTestMethod()//david
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<bool> InsertShoppingCartAsyncTestMethod() // filip
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<bool> InsertShoppingCartItemAsyncTestMethod() // lazar
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<bool> UpdateAccessedAtAsyncTestMethod() // luka
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<bool> UpdateQuantityAsyncTestMethod() // ilija
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<bool> UpdateNegativeQuantityAsyncTestMethod() // ja
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<bool> InsertInvalidShoppingCartItemAsyncTestMethod() // stojkovic
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public async Task<bool> DeleteInvalidShoppingCartItemAsyncTestMethod() // lara
+        {
+            throw new NotImplementedException();
+        }
     }
 }
