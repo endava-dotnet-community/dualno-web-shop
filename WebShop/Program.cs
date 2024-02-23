@@ -98,6 +98,7 @@ namespace WebShop
             builder.Services.AddSingleton<IValidator<ProductViewModel>, ProductViewModelValidator>();
             builder.Services.AddSingleton<IValidator<CategoryViewModel>, CategoryViewModelValidator>();
             builder.Services.AddSingleton<IValidator<ShoppingCartViewModel>, ShoppingCartViewModelValidator>();
+            builder.Services.AddSingleton<IValidator<ShoppingCartItemViewModel>, ShoppingCartItemViewModelValidator>();
 
             //// add jwt authentication
             //builder.Services
