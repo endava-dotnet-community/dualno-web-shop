@@ -94,17 +94,17 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task GetBySessionIdAsyncTestMethod()
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
 
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
             var sessionId = "session1";
 
-            repostitoryMock
+            repositoryMock
                 .Setup(repos => repos.GetBySessionIdAsync(sessionId))
                 .Returns(GetShoppingCart());
 
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
 
 
             var result = await service.GetBySessionIdAsync(sessionId);
@@ -117,14 +117,14 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task DeleteShoppingCartAsyncTestMethod()//vincic
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
             var Id = 1;
-            repostitoryMock
+            repositoryMock
                 .Setup(repos => repos.DeleteShoppingCartAsync(Id))
                 .Returns(Task.FromResult(true));
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
             var result = await service.DeleteShoppingCartAsync(Id);
             Assert.IsTrue(result);
         }
@@ -132,14 +132,14 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task DeleteShoppingCartItemAsyncTestMethod()//mihajlo
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
             int Id = 1;
 
-            repostitoryMock.Setup(repos => repos.DeleteShoppingCartItemAsync(Id)).Returns(Task.FromResult(true));
+            repositoryMock.Setup(repos => repos.DeleteShoppingCartItemAsync(Id)).Returns(Task.FromResult(true));
 
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
 
             var result = await service.DeleteShoppingCartItemAsync(Id);
 
@@ -149,13 +149,13 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task GetAllShoppingCartsAsyncTestMethod()//david
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
-            repostitoryMock
+            repositoryMock
                 .Setup(repos => repos.GetAllShoppingCartsAsync())
                 .Returns(GetShoppingCarts());
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
             var result = service.GetAllShoppingCartsAsync();
             Assert.IsNotNull(result?.Result);
             Assert.AreEqual(3, result.Result.Count);
@@ -206,14 +206,14 @@ namespace ServicesUnitTests
                 },
                 SessionId = "session4"
             };
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
-            repostitoryMock
+            repositoryMock
                 .Setup(repos => repos.InsertShoppingCartAsync(shoppingCart))
                 .Callback(() => InsertShoppingCart(shoppingCart))
                 .Returns(Task.FromResult(true));
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
             await service.InsertShoppingCartAsync(viewModel);
             Assert.AreEqual(3, AllShoppingCarts.Count);
             Assert.AreEqual(4, AllShoppingCarts[2].Id);
@@ -222,7 +222,7 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task InsertShoppingCartItemAsyncTestMethod() // lazar
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
             var shoppingCartItemViewModel = new ShoppingCartItemViewModel()
@@ -232,17 +232,11 @@ namespace ServicesUnitTests
                 ProductId = 1,
                 Quantity = 10
             };
-            var shoppingCartItem = new ShoppingCartItem()
-            {
-                Id = 1,
-                CartId = 1,
-                ProductId = 1,
-                Quantity = 10
-            };
-            repostitoryMock
-                .Setup(repos => repos.InsertShoppingCartItemAsync(shoppingCartItem))
+            
+            repositoryMock
+                .Setup(repos => repos.InsertShoppingCartItemAsync(It.IsAny<ShoppingCartItem>()))
                 .Returns(Task.FromResult(true));
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
             var result = await service.InsertShoppingCartItemAsync(shoppingCartItemViewModel);
             Assert.IsNotNull(result);
             Assert.IsTrue(result);
@@ -251,14 +245,14 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task UpdateAccessedAtAsyncTestMethod() // luka
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
             var Dt = DateTime.Now;
-            repostitoryMock
+            repositoryMock
                 .Setup(repos => repos.UpdateAccessedAtAsync(1, Dt))
                 .Returns(Task.FromResult(true));
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
             var result = await service.UpdateAccessedAtAsync(1, Dt);
             Assert.IsTrue(result);
         }
@@ -282,13 +276,13 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task UpdateNegativeQuantityAsyncTestMethod() // ja
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
-            repostitoryMock
+            repositoryMock
               .Setup(repos => repos.UpdateQuantityAsync(1, -1))
               .Returns(Task.FromResult(false));
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
             var result = await service.UpdateQuantityAsync(1, -1);
             Assert.IsFalse(result);
         }
@@ -296,19 +290,13 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task InsertInvalidShoppingCartItemAsyncTestMethod() // stojkovic
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
-            var shoppingCartItem = new ShoppingCartItem
-            {
-                CartId = 3,
-                ProductId = 1,
-                Quantity = -1
-            };
-            repostitoryMock
-                .Setup(repos => repos.InsertShoppingCartItemAsync(shoppingCartItem))
+            repositoryMock
+                .Setup(repos => repos.InsertShoppingCartItemAsync(It.IsAny<ShoppingCartItem>()))
                 .Returns(Task.FromResult(false));
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
             var shoppingCartItemViewModel = new ShoppingCartItemViewModel
             {
                 Id = 2,
@@ -323,13 +311,13 @@ namespace ServicesUnitTests
         [TestMethod]
         public async Task DeleteInvalidShoppingCartItemAsyncTestMethod() // lara
         {
-            var repostitoryMock = new Mock<IShoppingCartRepository>();
+            var repositoryMock = new Mock<IShoppingCartRepository>();
             var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
             var itemViewModelValidatorMock = new Mock<IValidator<ShoppingCartItemViewModel>>();
-            repostitoryMock
+            repositoryMock
                 .Setup(repos => repos.DeleteShoppingCartItemAsync(-1))
                 .Returns(Task.FromResult(false));
-            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
+            IShoppingCartService service = new ShoppingCartService(repositoryMock.Object, viewModelValidatorMock.Object, itemViewModelValidatorMock.Object);
             var result = await service.DeleteShoppingCartItemAsync(-1);
             Assert.IsFalse(result);
         }
