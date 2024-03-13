@@ -72,6 +72,7 @@ namespace WebShop
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IAuthorizationHandler, RequireAdminHandler>();
+         
             builder.Services.AddAuthorization(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
