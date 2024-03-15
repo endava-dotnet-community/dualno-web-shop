@@ -53,9 +53,9 @@ namespace WebShop
                 x.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            builder.Services.Configure<AuthOptions>(
-                builder.Configuration.GetSection(AuthOptions.Position)
-            );
+            //builder.Services.Configure<AuthOptions>(
+            //    builder.Configuration.GetSection(AuthOptions.Position)
+            //);
             
             builder.Services
                 .AddIdentity<IdentityUser, IdentityRole>(options =>
@@ -72,6 +72,7 @@ namespace WebShop
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IAuthorizationHandler, RequireAdminHandler>();
+         
             builder.Services.AddAuthorization(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
@@ -163,7 +164,7 @@ namespace WebShop
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            app.UseMiddleware<ApiKeyAuthMiddleware>();
+            //app.UseMiddleware<ApiKeyAuthMiddleware>();
 
             app.UseSession();
 

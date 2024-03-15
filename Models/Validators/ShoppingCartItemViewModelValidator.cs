@@ -15,6 +15,8 @@ namespace Models.Validators
 
             RuleFor(shoppingCart => shoppingCart.Id)
                 .GreaterThanOrEqualTo<ShoppingCartItemViewModel, long>(shoppingCart => 0);
+
+
         }
     }
 }
