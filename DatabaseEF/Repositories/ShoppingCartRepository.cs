@@ -1,8 +1,7 @@
 ﻿using Core.Abstractions.Repositories;
 using DatabaseEF.Entities;
-using DatabaseEF.Migrations;
 using Domain;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEF.Repositories

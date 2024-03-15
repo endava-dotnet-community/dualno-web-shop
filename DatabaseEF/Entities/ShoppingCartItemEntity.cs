@@ -1,5 +1,4 @@
-﻿using DatabaseEF.Migrations;
-using WebShop.DatabaseEF.Entities;
+﻿using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEF.Entities
 {
