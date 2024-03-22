@@ -58,7 +58,7 @@ namespace Services
 
         public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
         {
-            throw new NotImplementedException();
+           return await _repository.UpdateQuantityAsync(cartItemId, quantity);
         }
 
         private static ShoppingCartViewModel MapToViewModel(ShoppingCart shoppingCart)

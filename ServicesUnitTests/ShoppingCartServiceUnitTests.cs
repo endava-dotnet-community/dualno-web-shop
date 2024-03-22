@@ -57,37 +57,37 @@ namespace ServicesUnitTests
 
 
         [TestMethod]
-        public async Task<bool> DeleteShoppingCartAsyncTestMethod()//vincic
+        public async Task DeleteShoppingCartAsyncTestMethod()//vincic
         {
             throw new NotImplementedException();
         }
 
         [TestMethod]
-        public async Task<bool> DeleteShoppingCartItemAsyncTestMethod()//mihajlo
+        public async Task DeleteShoppingCartItemAsyncTestMethod()//mihajlo
         {
             throw new NotImplementedException();
         }
 
         [TestMethod]
-        public async Task<List<ShoppingCartViewModel>> GetAllShoppingCartsAsyncTestMethod()//david
+        public async Task GetAllShoppingCartsAsyncTestMethod()//david
         {
             throw new NotImplementedException();
         }
 
         [TestMethod]
-        public async Task<bool> InsertShoppingCartAsyncTestMethod() // filip
+        public async Task InsertShoppingCartAsyncTestMethod() // filip
         {
             throw new NotImplementedException();
         }
 
         [TestMethod]
-        public async Task<bool> InsertShoppingCartItemAsyncTestMethod() // lazar
+        public async Task InsertShoppingCartItemAsyncTestMethod() // lazar
         {
             throw new NotImplementedException();
         }
 
         [TestMethod]
-        public async Task<bool> UpdateAccessedAtAsyncTestMethod() // luka
+        public async Task UpdateAccessedAtAsyncTestMethod() // luka
         {
             throw new NotImplementedException();
         }
@@ -99,19 +99,32 @@ namespace ServicesUnitTests
         }
 
         [TestMethod]
-        public async Task<bool> UpdateNegativeQuantityAsyncTestMethod() // ja
+        public async Task UpdateNegativeQuantityAsyncTestMethod() // long cartItemId, int quantity
+        {
+            var repostitoryMock = new Mock<IShoppingCartRepository>();
+
+            var viewModelValidatorMock = new Mock<IValidator<ShoppingCartViewModel>>();
+
+            repostitoryMock
+                .Setup(repos => repos.UpdateQuantityAsync(1, -1))
+                .Returns(Task.FromResult(false));
+
+            IShoppingCartService service = new ShoppingCartService(repostitoryMock.Object, viewModelValidatorMock.Object);
+
+            var result = await service.UpdateQuantityAsync(1, -1);
+
+            Assert.IsFalse(result); 
+
+        }
+
+        [TestMethod]
+        public async Task InsertInvalidShoppingCartItemAsyncTestMethod() // stojkovic
         {
             throw new NotImplementedException();
         }
 
         [TestMethod]
-        public async Task<bool> InsertInvalidShoppingCartItemAsyncTestMethod() // stojkovic
-        {
-            throw new NotImplementedException();
-        }
-
-        [TestMethod]
-        public async Task<bool> DeleteInvalidShoppingCartItemAsyncTestMethod() // lara
+        public async Task DeleteInvalidShoppingCartItemAsyncTestMethod() // lara
         {
             throw new NotImplementedException();
         }
