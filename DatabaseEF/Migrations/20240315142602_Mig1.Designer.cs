@@ -12,18 +12,63 @@ using WebShop.DatabaseEF.Entities;
 namespace DatabaseEF.Migrations
 {
     [DbContext(typeof(WebshopContext))]
-    [Migration("20230922100446_initial")]
-    partial class initial
+    [Migration("20240315142602_Mig1")]
+    partial class Mig1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
+                .HasAnnotation("ProductVersion", "7.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("DatabaseEF.Entities.ShoppingCartEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("AccessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SessionId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ShoppingCart", (string)null);
+                });
+
+            modelBuilder.Entity("DatabaseEF.Entities.ShoppingCartItemEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("CartId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ShoppingCartItem", (string)null);
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -268,6 +313,25 @@ namespace DatabaseEF.Migrations
                     b.ToTable("Product", (string)null);
                 });
 
+            modelBuilder.Entity("DatabaseEF.Entities.ShoppingCartItemEntity", b =>
+                {
+                    b.HasOne("DatabaseEF.Entities.ShoppingCartEntity", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebShop.DatabaseEF.Entities.ProductEntity", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -328,6 +392,11 @@ namespace DatabaseEF.Migrations
                         .HasConstraintName("FK_Product_Category");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("DatabaseEF.Entities.ShoppingCartEntity", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("WebShop.DatabaseEF.Entities.CategoryEntity", b =>

@@ -12,5 +12,6 @@ namespace Core.Abstractions.Repositories
         Task<bool> InsertShoppingCartItemAsync(ShoppingCartItem shoppingCartItem);
         Task<bool> UpdateQuantityAsync(long cartItemId, int quantity);
         Task<bool> DeleteShoppingCartItemAsync(long cartItemId);
+        Task<List<ShoppingCartItem>> GetAllShoppingCartItemsAsync(long cartId);
     }
 }

@@ -1,8 +1,7 @@
 ﻿using Core.Abstractions.Repositories;
 using DatabaseEF.Entities;
-using DatabaseEF.Migrations;
 using Domain;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using WebShop.DatabaseEF.Entities;
 
 namespace DatabaseEF.Repositories
@@ -26,7 +25,6 @@ namespace DatabaseEF.Repositories
 
             return true;
         }
-
         public async Task<bool> DeleteShoppingCartItemAsync(long cartItemId) 
         {
             ShoppingCartItemEntity entity = await _context.CartItems.FindAsync(cartItemId);
@@ -39,7 +37,6 @@ namespace DatabaseEF.Repositories
 
             return true;
         }
-
 
         public async Task<List<ShoppingCart>> GetAllShoppingCartsAsync()
         {
@@ -110,6 +107,17 @@ namespace DatabaseEF.Repositories
             await UpdateAccessedAtAsync(entity.CartId, DateTime.UtcNow);
 
             return true;
+        }
+
+        public async Task<List<ShoppingCartItem>> GetAllShoppingCartItemsAsync(long cartId)
+        {
+            ShoppingCartEntity entity = await _context.Carts.FindAsync(cartId);
+
+            if (entity == null) return null;
+
+            var result = entity.Items.Select(p => MapFromEntityItems(p)).ToList();
+
+            return result;
         }
 
         private static ShoppingCartItem MapFromEntityItems (ShoppingCartItemEntity p)

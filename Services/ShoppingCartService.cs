@@ -12,28 +12,35 @@ namespace Services
     {
         private readonly IShoppingCartRepository _repository;
         private readonly IValidator<ShoppingCartViewModel> _viewModelValidator;
+        private readonly IValidator<ShoppingCartItemViewModel> _viewModelItemValidator;
 
         public ShoppingCartService(
             IShoppingCartRepository shoppingcartRepository,
-            IValidator<ShoppingCartViewModel> viewModelValidator)
+            IValidator<ShoppingCartViewModel> viewModelValidator,
+            IValidator<ShoppingCartItemViewModel> viewModelItemValidator)
         {
             _repository = shoppingcartRepository;
             _viewModelValidator = viewModelValidator;
+            _viewModelItemValidator = viewModelItemValidator;
         }
 
         public async Task<bool> DeleteShoppingCartAsync(long cartId)
         {
-            throw new NotImplementedException();
+            return await _repository.DeleteShoppingCartAsync(cartId);
         }
 
         public async Task<bool> DeleteShoppingCartItemAsync(long cartItemId)
         {
-            throw new NotImplementedException();
+            return await _repository.DeleteShoppingCartItemAsync(cartItemId);
         }
 
         public async Task<List<ShoppingCartViewModel>> GetAllShoppingCartsAsync()
         {
-            throw new NotImplementedException();
+            return (await _repository
+                .GetAllShoppingCartsAsync())
+                .Select<ShoppingCart, ShoppingCartViewModel>(p => MapToViewModel(p))
+                .Where(p => p != null)
+                .ToList();
         }
 
         public async Task<ShoppingCartViewModel> GetBySessionIdAsync(string sessionId)
@@ -41,24 +48,59 @@ namespace Services
             return MapToViewModel(await _repository.GetBySessionIdAsync(sessionId));
         }
 
-        public async Task<bool> InsertShoppingCartAsync(ShoppingCartViewModel shoppingCart)
+        public async Task<bool> InsertShoppingCartAsync(ShoppingCartViewModel shoppingCartViewModel)
         {
-            throw new NotImplementedException();
+            _viewModelValidator.ValidateAndThrow(shoppingCartViewModel);
+            ShoppingCart shoppingCart = MapFromViewModel(shoppingCartViewModel);
+            if (shoppingCart == null)
+                throw new ArgumentNullException(nameof(shoppingCartViewModel));
+            return await _repository.InsertShoppingCartAsync(shoppingCart);
         }
 
-        public async Task<bool> InsertShoppingCartItemAsync(ShoppingCartItemViewModel shoppingCartItem)
-        {
-            throw new NotImplementedException();
+        public async Task<bool> InsertShoppingCartItemAsync(string sessionId ,ShoppingCartItemViewModel shoppingCartItemViewModel)
+        { 
+            var shoppingCart = await _repository.GetBySessionIdAsync(sessionId);
+            if(shoppingCart == null)
+            {
+                await _repository.InsertShoppingCartAsync(new ShoppingCart
+                {
+                    SessionId = sessionId,
+                    AccessedAt = DateTime.UtcNow,
+                });
+                shoppingCart = await _repository.GetBySessionIdAsync(sessionId);
+            }
+            shoppingCartItemViewModel.CartId = shoppingCart.Id;
+            shoppingCartItemViewModel.Id = 0;
+            _viewModelItemValidator.ValidateAndThrow(shoppingCartItemViewModel);
+            ShoppingCartItem shoppingCartItem = MapItemFromViewModel(shoppingCartItemViewModel);
+            //Za validator kriterijumi shoppingCartItem == null || (shoppingCartItem.Id == null || shoppingCartItem.Id < 0) || (shoppingCartItem.CartId == null || shoppingCartItem.CartId < 0) || (shoppingCartItem.ProductId ==null || shoppingCartItem.ProductId <0) || shoppingCartItem.Quantity<0
+            if (shoppingCartItem == null)
+            {
+                throw new ArgumentNullException(nameof(shoppingCartItemViewModel));
+            }
+            var result = await _repository.InsertShoppingCartItemAsync(shoppingCartItem);
+
+            if (result == false)
+                return false;
+            await _repository.UpdateAccessedAtAsync(shoppingCart.Id,DateTime.UtcNow);
+            return true;
         }
 
         public async Task<bool> UpdateAccessedAtAsync(long cartId, DateTime accessedAt)
         {
-            throw new NotImplementedException();
+            return await _repository.UpdateAccessedAtAsync(cartId, accessedAt);
         }
 
         public async Task<bool> UpdateQuantityAsync(long cartItemId, int quantity)
         {
-           return await _repository.UpdateQuantityAsync(cartItemId, quantity);
+            return await _repository.UpdateQuantityAsync(cartItemId, quantity);
+        }
+
+        public async Task<List<ShoppingCartItemViewModel>> GetAllShoppingCartItemsAsync(long cartId)
+        {
+            var items = await _repository.GetAllShoppingCartItemsAsync(cartId);
+            var result = items.Select(MapItemToViewModel).ToList();
+            return result;
         }
 
         private static ShoppingCartViewModel MapToViewModel(ShoppingCart shoppingCart)
